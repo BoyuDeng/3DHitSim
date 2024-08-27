@@ -1,0 +1,31 @@
+% Define the file path
+file_path = '/home/boyi/Desktop/CFD/field/';
+
+% Define the range of file numbers
+start_num = 350;
+end_num = 1000;
+
+% Initialize cell arrays to store the results
+values_list = cell(end_num - start_num + 1, 1);
+variables_list = cell(end_num - start_num + 1, 1);
+
+% Loop through the range of file numbers
+for i = start_num:end_num
+    % Construct the filename with leading zeros
+    filename = sprintf('%sfield_%05d', file_path, i);
+    
+    % Read the file
+    [values, variables] = read_field_file(filename);
+    
+    % Store the results
+    values_list{i - start_num + 1} = values;
+    variables_list{i - start_num + 1} = variables;
+end
+
+% Display a message indicating that the files have been read
+disp('All files have been read successfully.');
+
+% Example: Access the values and variables for the first file
+disp('Values for the first file:');
+disp(values_list{1});
+
