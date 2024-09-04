@@ -53,12 +53,13 @@ t = 0:dt:650*dt;
 %velocity in y is 2
 W = 1; 
 p =2;
+Forcing = 0;
 
 StartLoc = [0.5, 0.5];
 
 coe = [0,0,0];
 
-straightCOT = COT_function(coe,t,W,StartLoc,uField,vField,wField,dt, p,U);
+[straightCOT, straightFdrag] = COT_function(coe,t,W,StartLoc,uField,vField,wField,dt, p,U, Forcing);
 
 %%
 
@@ -108,7 +109,7 @@ hold off; % Release the hold on the current figure
 E = zeros(1,1000);
 
 for i = 1:1000
-    E(i) = COT_function(A(:,i),t,W,StartLoc,uField,vField,wField,dt,p,U);
+    E(i) = COT_function(A(:,i),t,W,StartLoc,uField,vField,wField,dt,p,U,Forcing);
 end
 
 histogram(E/straightCOT)
@@ -128,7 +129,7 @@ scaled_random_numbers1 = 0.3 + (0.7 - 0.3) * random_numbers1;
 StartLoc = [scaled_random_numbers; scaled_random_numbers1];
 coeze = zeros(3,1);
 for i = 1:100
-    Es(i) = COT_function(coeze,t,W,StartLoc(:,i),uField,vField,wField,dt,p,U);
+    Es(i) = COT_function(coeze,t,W,StartLoc(:,i),uField,vField,wField,dt,p,U,Forcing);
 end
 histogram(Es/straightCOT)
 title('Histogram of 100 strating point');
@@ -162,7 +163,7 @@ lb = -0.1 * ones(12, 1);  % Lower bounds
 ub = 0.1*ones(12, 1);   % Upper bounds
 options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'iter');
 problem = createOptimProblem('fmincon', 'objective', ...
-    @(coeffs) COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p, U), ...
+    @(coeffs) COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p, U,Forcing), ...
     'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
 % Create a GlobalSearch object
@@ -175,7 +176,7 @@ gs = GlobalSearch;
 optimized_coeffs = result;
 
 % Calculate the total energy with the optimized coefficients
-totalEnergy = COT_function(optimized_coeffs, t, W, StartLoc, uField, vField, wField, dt, p, U);
+totalEnergy = COT_function(optimized_coeffs, t, W, StartLoc, uField, vField, wField, dt, p, U,Forcing);
 disp('Optimized total energy:');
 disp(totalEnergy);
 
@@ -200,6 +201,29 @@ facotor1 = 3;
             error('Each cell must contain numeric data.');
         end
     end
+
+    %%
+
+    % Normalize the results by straightCOT
+normalized_E = E / straightCOT;
+normalized_E_distinct = totalEnergy / straightCOT;
+
+% Plot the histogram for the 1000 trajectories
+figure;
+histogram(normalized_E);
+hold on;
+
+% Mark the distinct point on the histogram as a vertical line
+xline(normalized_E_distinct, 'r', 'LineWidth', 2);
+
+% Add title and labels
+title('Histogram of 1000 trajectories with distinct point');
+xlabel('Normalized COT');
+ylabel('Frequency');
+
+% Add legend for the distinct point
+legend('1000 Trajectories', 'Distinct Point', 'Location', 'Best');
+hold off;
 
 
 

@@ -1,4 +1,4 @@
-function COT = COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p,U)
+function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p,U, Forcing)
     try
 
 
@@ -35,8 +35,12 @@ function COT = COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, 
         % 
         % Calculate the drag forces
 
-        Fdrag =(1/G)* (St*Du-(Velocity_fields - Vs) .* vecnorm(Velocity_fields - Vs).^(p-1))+1;
+        Fdrag =(1/G)* (St*Du-(Velocity_fields - Vs) .* vecnorm(Velocity_fields - Vs).^(p-1));
         
+        Fnorm = abs(mean(vecnorm(Fdrag)))*Forcing;
+
+        Fdrag(2,:) = Fdrag(2,:) - Fnorm;
+
         % Check dimensions of Fdrag
         % disp('Dimensions of Fdrag:');
         % disp(size(Fdrag));
