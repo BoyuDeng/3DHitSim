@@ -39,7 +39,7 @@ function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wFi
         
         Fnorm = abs(mean(vecnorm(Fdrag)))*Forcing;
 
-        Fdrag(2,:) = Fdrag(2,:) - Fnorm;
+        Fdrag(3,:) = Fdrag(3,:) - Fnorm;
 
         % Check dimensions of Fdrag
         % disp('Dimensions of Fdrag:');

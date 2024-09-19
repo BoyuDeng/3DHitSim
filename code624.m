@@ -53,7 +53,7 @@ t = 0:dt:650*dt;
 %velocity in y is 2
 W = 1; 
 p =2;
-Forcing = 0;
+Forcing = 1;
 
 StartLoc = [0.5, 0.5];
 
@@ -126,10 +126,10 @@ random_numbers1 = rand(1, 100);
 % Scale and shift to the range 0.3 to 0.7
 scaled_random_numbers1 = 0.3 + (0.7 - 0.3) * random_numbers1;
 
-StartLoc = [scaled_random_numbers; scaled_random_numbers1];
+StartLocs = [scaled_random_numbers; scaled_random_numbers1];
 coeze = zeros(3,1);
 for i = 1:100
-    Es(i) = COT_function(coeze,t,W,StartLoc(:,i),uField,vField,wField,dt,p,U,Forcing);
+    Es(i) = COT_function(coeze,t,W,StartLocs(:,i),uField,vField,wField,dt,p,U,Forcing);
 end
 histogram(Es/straightCOT)
 title('Histogram of 100 strating point');
@@ -159,6 +159,7 @@ ylabel('Frequency');
 %%
 % Define the problem for fmincon
 initial_coeffs = A(:,min_index);
+initial_coeffs = zeros(12,1);
 lb = -0.1 * ones(12, 1);  % Lower bounds
 ub = 0.1*ones(12, 1);   % Upper bounds
 options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'iter');
@@ -179,6 +180,11 @@ optimized_coeffs = result;
 totalEnergy = COT_function(optimized_coeffs, t, W, StartLoc, uField, vField, wField, dt, p, U,Forcing);
 disp('Optimized total energy:');
 disp(totalEnergy);
+%%
+Forcing = 1;
+
+[optimized_coeffs, optimized_E] = optimization12(t, W, StartLoc, uField, vField, wField, dt, p, U,Forcing);
+
 
 %%
 facotor1 = 3;
@@ -222,8 +228,19 @@ xlabel('Normalized COT');
 ylabel('Frequency');
 
 % Add legend for the distinct point
-legend('1000 Trajectories', 'Distinct Point', 'Location', 'Best');
+legend('1000 Trajectories', 'Optimal Trajecotry', 'Location', 'Best');
 hold off;
+
+%%
+
+Forcing = 1;
+for i = 1:3
+    StraE(i) = COT_function(coeze,t,W,StartLocs(:,i),uField,vField,wField,dt,p,U,Forcing);
+    [Opcoe,OpE(i)] = optimization12(t, W, StartLocs(:,i), uField, vField, wField, dt, p, U,Forcing);
+    DlssE0(i) = OpE(i)/StraE(i);
+
+end
+
 
 
 
