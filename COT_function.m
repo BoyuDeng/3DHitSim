@@ -7,7 +7,7 @@ function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wFi
         St = 0;
         Du = calculateDu(t,coeffs);
         % Calculate X
-         X = calculateX(t, coeffs, W, StartLoc);
+        X = calculateX(t, coeffs, W, StartLoc);
         
         % Check dimensions of X
         % disp('Dimensions of X:');
@@ -35,19 +35,15 @@ function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wFi
         % 
         % Calculate the drag forces
 
-        Fdrag =(1/G)* (St*Du-(Velocity_fields - Vs) .* vecnorm(Velocity_fields - Vs).^(p-1));
+        Fdrag =(1/G)* (St*Du-(Velocity_fields./U - Vs./U) .* vecnorm(Velocity_fields./U - Vs./U).^(p-1));
         
-        Fnorm = abs(mean(vecnorm(Fdrag)))*Forcing;
+        Fnorm = 0.7*Forcing;
 
         Fdrag(3,:) = Fdrag(3,:) - Fnorm;
+        
+        COT = (G/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt/t(end));
 
-        % Check dimensions of Fdrag
-        % disp('Dimensions of Fdrag:');
-        % disp(size(Fdrag));
         
-        % Calculate the total energy
-        
-        COT = (G/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*dt;
     catch ME
         disp('Error in objective function:');
         disp(ME.message);

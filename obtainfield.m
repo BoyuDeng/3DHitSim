@@ -1,7 +1,7 @@
 
 % file_path = '/home/boyi/Desktop/CFD/field/';
 close all; clear; clc;
-load('newfielddata.mat')
+load('fielddata624.mat')
 % Define the range of file numbers
 % start_num = 350;
 % end_num = 1000;
@@ -53,33 +53,31 @@ end
 
 % Downsample the data for visualization if needed (optional)
 % This is useful if the dataset is too large to visualize clearly
-step = 1; % Example step size for downsampling
-x = x(1:step:10, 1:step:10, 1:step:10);
-y = y(1:step:10, 1:step:10, 1:step:10);
-z = z(1:step:10, 1:step:10, 1:step:10);
-nu=515;
+step = 2; % Example step size for downsampling
+x = x(1:step:64, 1:step:64, 1:step:64);
+y = y(1:step:64, 1:step:64, 1:step:64);
+z = z(1:step:64, 1:step:64, 1:step:64);
+nu=602;
 % Assume uField, vField, and wField are cell arrays of matrices
 u = uField{nu};
 u = u{1};
-u = u(1:step:10, 1:step:10, 1:step:10);
+u = u(1:step:64, 1:step:64, 1:step:64);
 v = vField{nu};
 v = v{1};
-v = v(1:step:10, 1:step:10, 1:step:10);
+v = v(1:step:64, 1:step:64, 1:step:64);
 w = wField{nu};
 w = w{1};
-w = w(1:step:10, 1:step:10, 1:step:10);
+w = w(1:step:64, 1:step:64, 1:step:64);
 
 
 % Create the 3D vector field plot
 figure;
-quiver3(x, y, z, u, v, w);
+quiver(x(:,:,1), y(:,:,1), u(:,:,1), v(:,:,1));
 xlabel('X');
 ylabel('Y');
-zlabel('Z');
-title('3D Vector Field');
+title('2D Vector Field');
 grid on;
-axis tight;
-view(3); % Set the view to 3D
+axis tight; % Set the view to 3D
 
 %%
 
