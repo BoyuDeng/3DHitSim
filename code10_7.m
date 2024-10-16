@@ -14,7 +14,7 @@ for i = 1:651
     wField{i} = data(3);
 end
 
-Ufactor = 2;
+Ufactor = 1/6.975;
 
 [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
@@ -32,7 +32,6 @@ t = 0:dt:650*dt;
 %velocity in y is 2
 W = 1; 
 p =1;
-Forcing = 1;
 
 
 StartLoc = [0.5, 0.5];
@@ -86,13 +85,14 @@ hold off; % Release the hold on the current figure
 
 %%
 E = zeros(1,1000);
+FD = zeros(1,1000);
 Forcing = 0;
 for i = 1:1000
     E(i) = COT14(A(:,i),t,W,uField,vField,wField,dt,p,U,Forcing);
 end
-straightCOT = COT_function(coeze,t,W,StartLoc,uField,vField,wField,dt, p,U, Forcing);
+[straightCOT, fd] = COT_function(coeze,t,W,StartLoc,uField,vField,wField,dt, p,U, Forcing);
 histogram(E/straightCOT)
-title('Histogram of 1000 trajectories');
+title('Histogram of 1000 random trajectories');
 xlabel('Normalized COT');
 ylabel('Frequency');
 
@@ -102,6 +102,28 @@ ylabel('Frequency');
 [optimized_coeffs, optimized_E] = optimization14(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 
+%%
+
+    % Normalize the results by straightCOT
+normalized_E = E / straightCOT;
+normalized_E_distinct = optimized_E / straightCOT;
+
+% Plot the histogram for the 1000 trajectories
+figure;
+histogram(normalized_E);
+hold on;
+
+% Mark the distinct point on the histogram as a vertical line
+xline(normalized_E_distinct, 'r', 'LineWidth', 2);
+
+% Add title and labels
+title('Histogram of 1000 trajectories with optimized point');
+xlabel('Normalized COT');
+ylabel('Frequency');
+
+% Add legend for the distinct point
+legend('1000 Trajectories', 'Optimal Trajecotry', 'Location', 'Best');
+hold off;
 
 
 

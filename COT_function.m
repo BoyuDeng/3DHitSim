@@ -1,4 +1,4 @@
-function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p,U, Forcing)
+function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wField, dt, p,U, B)
     try
 
 
@@ -37,9 +37,7 @@ function [COT, Fdrag] = COT_function(coeffs, t, W, StartLoc, uField, vField, wFi
 
         Fdrag =(1/G)* (St*Du-(Velocity_fields./U - Vs./U) .* vecnorm(Velocity_fields./U - Vs./U).^(p-1));
         
-        Fnorm = 0.7*Forcing;
-
-        Fdrag(3,:) = Fdrag(3,:) - Fnorm;
+        Fdrag(3,:) = Fdrag(3,:) - B;
         
         COT = (G/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt/t(end));
 
