@@ -14,9 +14,10 @@ function X = X14(t, coeffs, W)
     b(1:2:end) = 0;
     
     % Initialize the components of the vector
-    a0 = coeffs(13)+0.5;
+    last = coeffs(end-1);
+    a0 = last+0.5;
     b0 = 0.1;
-    c0 = coeffs(14)+0.5;  % Assuming c0 is initially 0
+    c0 = coeffs(end)+0.5;  % Assuming c0 is initially 0
     
     % Initialize the result matrix X
     X = zeros(3, length(t));

@@ -14,7 +14,7 @@ for i = 1:651
     wField{i} = data(3);
 end
 
-Ufactor = 1/6.975;
+Ufactor = (1/6.975)*0.0098;
 
 [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
@@ -35,7 +35,7 @@ p =1;
 
 
 StartLoc = [0.5, 0.5];
-coeze = zeros(3,1);
+coeze = zeros(5,1);
 
 
 %%
@@ -86,11 +86,11 @@ hold off; % Release the hold on the current figure
 %%
 E = zeros(1,1000);
 FD = zeros(1,1000);
-Forcing = 0;
+Forcing = 1;
 for i = 1:1000
     E(i) = COT14(A(:,i),t,W,uField,vField,wField,dt,p,U,Forcing);
 end
-[straightCOT, fd] = COT_function(coeze,t,W,StartLoc,uField,vField,wField,dt, p,U, Forcing);
+[straightCOT, G] = COT14(coeze,t,W,uField,vField,wField,dt, p,U, Forcing);
 histogram(E/straightCOT)
 title('Histogram of 1000 random trajectories');
 xlabel('Normalized COT');
@@ -124,6 +124,58 @@ ylabel('Frequency');
 % Add legend for the distinct point
 legend('1000 Trajectories', 'Optimal Trajecotry', 'Location', 'Best');
 hold off;
+
+
+%%
+% Example variables
+% P is the 3xT matrix for particle positions
+% V is the 3xT matrix for vectors corresponding to the particle
+
+t = 0:dt:650*dt;
+P = X14(t,optimized_coeffs,W);
+V = get_vel(uField,vField,wField,64,P);
+
+
+% Assume P and V are already defined
+t = size(P, 2); % number of time steps
+
+% Extract X, Y, Z coordinates for the particle locations
+X = P(1, :);  % X-coordinates of particle
+Y = P(2, :);  % Y-coordinates of particle
+Z = P(3, :);  % Z-coordinates of particle
+
+
+V_scale = 1;
+% Extract vector components at each time step
+U_ = V(1, :)*V_scale;  % X-components of the vectors
+V_ = V(2, :)*V_scale; % Y-components of the vectors
+W_ = V(3, :)*V_scale;  % Z-components of the vectors
+
+% Create the figure
+figure;
+
+% Plot the particle location in 3D
+plot3(X, Y, Z, 'LineWidth', 1.5);
+hold on;
+
+% Plot vectors at every 10th time step
+step = 10; % Vector plotted every 10th time step
+quiver3(X(1:step:end), Y(1:step:end), Z(1:step:end), ...
+        U_(1:step:end), V_(1:step:end), W_(1:step:end), 0.005, 'r'); % scale factor 0.5 for the vectors
+
+% Add labels and title
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
+title('3D Plot of Particle Motion and Vectors');
+grid on;
+
+% Adjust view angle for better visualization
+view(3); % standard 3D view
+
+hold off;
+
+
 
 
 
