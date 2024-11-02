@@ -2,9 +2,10 @@ function [COT, G] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B)
     try
 
 
-        tau_p = 1e-3;
+        tau_p = 1e-1;
         G = 9.8*tau_p/U;
-        St = tau_p*U/0.2;
+        %St = tau_p*U/0.2;
+        St = 0.5;
         Du = Du14(t,coeffs);
         % Calculate X
         X = X14(t, coeffs, W);

@@ -4,8 +4,8 @@ function [optimized_coeffs, totalEnergy, fval] = optimization14(t, W, uField, vF
     initial_coeffs = zeros(14,1);
     
     % Set bounds for the optimization problem
-    lb = -0.1 * ones(12, 1);  % Lower bounds
-    ub = 0.1 * ones(12, 1);   % Upper bounds
+    lb = -0.1 * ones(14, 1);  % Lower bounds
+    ub = 0.1 * ones(14, 1);   % Upper bounds
     
     % Define optimization options using the interior-point algorithm
     options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'iter');

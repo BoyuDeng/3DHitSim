@@ -137,7 +137,7 @@ hold off;
 % V is the 3xT matrix for vectors corresponding to the particle
 
 t = 0:dt:650*dt;
-P = X14(t,optcoeffs10,W);
+P = X14(t,coeze,W);
 V = get_vel(uField,vField,wField,64,P);
 
 
@@ -187,7 +187,7 @@ tau_p = 1e-1;
 
 for i = 1:5
 
-Ufactor = (1/6.975)*thecoe(2);
+Ufactor = (1/6.975)*thecoe(5);
 
 [uFieldc, vFieldc, wFieldc] = ChangeU(uField,vField,wField, Ufactor);
 
@@ -203,7 +203,7 @@ optcoeffs(:,i) = optimized_coeffs;
 %normalized_Es(i) = optimized_Es(i) / straightCOT(i);
 end
 
-%%
+
 Ufactor = (1/6.975)*10;
 
 [uFieldc, vFieldc, wFieldc] = ChangeU(uField,vField,wField, Ufactor);
@@ -229,16 +229,14 @@ plot(thecoe, tttt)
 
 
 % Define your data
-G = Gs; 
-G(6) = G10;
-Gq = flip(G);% Replace with your actual values
-result = flip(tttt); % Replace with your actual values
+G = thecoe;     % Replace with your actual values
+result = tttt; % Replace with your actual values
 
 % Plot the data
 figure;
-plot(Gq, result, '-o'); % '-o' specifies a line with circle markers
+plot(G, result, '-o'); % '-o' specifies a line with circle markers
 xlabel('G');
 ylabel('OptCOT/StraightCOT');
-title('Plot of six Gs');
+title('Plot of five Gs');
 grid on;
 
