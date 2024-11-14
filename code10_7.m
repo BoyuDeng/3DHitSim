@@ -18,9 +18,25 @@ Ufactor = (1/6.975);
 
 [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
-
 U = calculateRMS(uField,vField,wField);
 
+
+
+%%
+
+
+ [uField, vField, wField] = ChangeU(uField,vField,wField, 14);
+for i = 1:8
+
+
+ 
+ [uField, vField, wField] = ChangeU(uField,vField,wField, 1/2);
+
+tau_p = 1e-1;
+U = calculateRMS(uField,vField,wField);
+Gq(i) = 9.8*tau_p/U;
+
+end
 
 
 %%
@@ -182,14 +198,14 @@ hold off;
 
 %%
 
-thecoe = [0.3,1,2,3,5,10];
+ [uField, vField, wField] = ChangeU(uField,vField,wField, 14);
 tau_p = 1e-1;
 
-for i = 1:5
+for i = 1:8
 
-Ufactor = (1/6.975)*thecoe(2);
+Ufactor = (1/2);
 
-[uFieldc, vFieldc, wFieldc] = ChangeU(uField,vField,wField, Ufactor);
+[uFieldc, vFieldc, wFieldc] = ChangeU(uFieldc,vFieldc,wFieldc, Ufactor);
 
 
 U = calculateRMS(uFieldc,vFieldc,wFieldc);
@@ -204,41 +220,43 @@ optcoeffs(:,i) = optimized_coeffs;
 end
 
 %%
-Ufactor = (1/6.975)*10;
+[uFieldc, vFieldc, wFieldc] = ChangeU(uField,vField,wField, 56);
+for i = 1 : 2
+Ufactor = 1/2;
 
-[uFieldc, vFieldc, wFieldc] = ChangeU(uField,vField,wField, Ufactor);
+[uFieldc, vFieldc, wFieldc] = ChangeU(uFieldc,vFieldc,wFieldc, Ufactor);
 
 
 U = calculateRMS(uFieldc,vFieldc,wFieldc);
 
 [straightCOT, G] = COT14(coeze,t,1,uFieldc,vFieldc,wFieldc,dt, p,U, Forcing);
-straightCOT10 = straightCOT;
-G10 = G;
+straightCOT10(i) = straightCOT;
+G10(i) = G;
 [optimized_coeffs, optimized_E] = optimization14(t, W, uFieldc, vFieldc, wFieldc, dt, p, U,Forcing);
-optimized_E10 = optimized_E;
+optimized_E10(i) = optimized_E;
 optcoeffs10 = optimized_coeffs;
-
-for i = 1:5
-tttt(i) = optimized_Es(i) / straightCOTs(i);
 end
-tttt(6) = optimized_E10/straightCOT10
-plot(thecoe, tttt)
 
+%%
+for i = 1:8
+    G10(i+2)= Gs(i);
+    optimized_E10(i+2) = optimized_Es(i);
+    straightCOT10(i+2) = straightCOTs(i);
+end
+for i =1:10
+    result(i) = optimized_E10(i)/straightCOT10(i);
+end
 
 %%
 
-
 % Define your data
-G = Gs; 
-G(6) = G10;
-Gq = flip(G);% Replace with your actual values
-result = flip(tttt); % Replace with your actual values
+% Assuming G10 and result are already defined with appropriate data
 
 % Plot the data
 figure;
-plot(Gq, result, '-o'); % '-o' specifies a line with circle markers
+loglog(G10, result, '-o'); % '-o' specifies a line with circle markers
 xlabel('G');
 ylabel('OptCOT/StraightCOT');
-title('Plot of six Gs');
+title('Plot of ten Gs');
 grid on;
 

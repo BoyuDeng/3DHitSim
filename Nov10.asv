@@ -1,0 +1,61 @@
+close all;clear,clc;
+
+load("fielddata624.mat");
+dt = 1e-3;
+t = 0:dt:650*dt;
+W = 1; 
+p =1;
+tau_p=1e-1;
+Forcing = 1;
+
+StartLoc = [0.5, 0.5];
+coeze = zeros(5,1);
+% Initialize 2D cell arrays with dimensions [651, n]
+n = 10; % assuming 'n' is defined somewhere above as the length of Ufactor
+uField = cell(651, n);
+vField = cell(651, n);
+wField = cell(651, n);
+G = zeros(n,1);
+U = G;
+% Populate initial values for the first column
+for i = 1:651
+    data = variables_list{i};
+    uField{i, 1} = data(1);
+    vField{i, 1} = data(2);
+    wField{i, 1} = data(3);
+end
+
+% Define Ufactor with n values
+Ufactor = linspace(0.05, 10, n);
+
+% Call ChangeU function for each Ufactor to fill each column of uField, vField, wField
+for j = 1:n
+    % Extract the current column (original values) for modification
+    current_uField = uField(:, 1);
+    current_vField = vField(:, 1);
+    current_wField = wField(:, 1);
+    
+    % Apply ChangeU to get the modified fields with current Ufactor(j)
+    [updated_uField, updated_vField, updated_wField] = ChangeU(current_uField, current_vField, current_wField, Ufactor(j));
+    
+    % Store the results in the j-th column of the output fields
+    uField(:, j) = updated_uField;
+    vField(:, j) = updated_vField;
+    wField(:, j) = updated_wField;
+    U(j) = calculateRMS(updated_uField,updated_vField,updated_wField);
+    G(j) = calculateG(tau_p, U(j));
+end
+
+%%
+for i = 1:10
+
+
+[optimized_coeffs, optimized_W,optimized_E] = optimization15(t, W, uField(:,i), vField(:,i), wField(:,i), dt, p, U(i),Forcing);
+optimized_Es(i) = optimized_E;
+optcoeffs(:,i) = optimized_coeffs;
+optW(i) = optimized_W;
+
+[straightCOT] = COT14(coeze,t,optimized_W,uField(:,i),vField(:,i),wField(:,i),dt, p,U, Forcing);
+straightCOTs(i) = straightCOT;
+normalized_Es(i) = optimized_Es(i) / straightCOT(i);
+end
