@@ -1,0 +1,166 @@
+close all;clear,clc;
+
+load("77loc.mat")
+i = 5;
+% ws = zeros(10,5);
+% coe = zeros(14,10,5);
+ws(:,i) = optW;
+coe(:,:,i) = optcoeffs;
+
+
+%results = zeros(10,5);
+results(:,i) = result;
+results(:,5) = result;
+
+% Plotting
+figure;
+hold on;
+for i = 1:size(results, 2)         % Loop over each column in the data matrix
+    loglog(G, results(:, i), '-', 'DisplayName', ['Result ' num2str(i)]);
+end
+hold off;
+
+% Labels and title
+xlabel('G');
+ylabel('OptCOT/StraightCOT');
+title('Plot of 5 normCOT starting at different location');
+legend('show');
+grid on;
+
+figure;
+hold on;
+for i = 1:size(results, 2)  % Loop over each column in the data matrix
+    loglog(G, results(:, i), '-', 'DisplayName', ['Result ' num2str(i)]);
+end
+hold off;
+
+% Labels and title
+xlabel('G');
+ylabel('OptCOT/StraightCOT');
+title('Plot of 5 normCOT starting at different location');
+legend('show');
+grid on;
+
+% Ensure the axes are logarithmic
+set(gca, 'XScale', 'log', 'YScale', 'log');
+
+
+
+
+figure;
+hold on;
+for i = 1:size(ws, 2)         % Loop over each column in the data matrix
+    plot(G, ws(:, i)./U, '-', 'DisplayName', ['Result ' num2str(i)]);
+end
+hold off;
+
+% Labels and title
+xlabel('G');
+ylabel('W/U');
+title('Plot of 5 norm optimal particle speed starting at different location');
+legend('show');
+grid on;
+
+sample = coe(:,9,:);
+sample = squeeze(sample);
+
+sample1 = sample;
+sample1(13,2) = sample1(13,2)-0.2;
+sample1(14,2) = sample1(14,2)-0.2;
+sample1(13,3) = sample1(13,3)-0.2;
+sample1(14,3) = sample1(14,3)+0.2;
+sample1(13,4) = sample1(13,4)+0.2;
+sample1(14,4) = sample1(14,4)-0.2;
+sample1(13,5) = sample1(13,5)+0.2;
+sample1(14,5) = sample1(14,5)+0.2;
+
+
+figure;
+hold on; % Hold on to plot multiple trajectories in the same figure
+grid on; % Enable grid
+title('3D Trajectory G=1.24');
+xlabel('X Component');
+ylabel('Y Component');
+zlabel('Z Component');
+
+% Loop through the first 5 trajectories
+colors = lines(5); % Generate 5 distinct colors
+labels = cell(1, 5); % Preallocate cell array for legend labels
+
+for k = 1:5
+    X(:, :, k) = X14(t, sample1(:, k), ws(3, k));
+    plot3(X(1, :, k), X(2, :, k), X(3, :, k), 'LineWidth', 2, 'Color', colors(k, :));
+    labels{k} = ['Trajectory ' num2str(k)]; % Create label for each line
+end
+
+% Set specific axes limits
+xlim([0 1]);  % X-axis limits
+ylim([0 1]);  % Y-axis limits
+zlim([0 1]);  % Z-axis limits
+
+% Adjust the view angle for better 3D perception
+view(3); % Default 3D view
+
+% Add legend to label each line
+legend(labels, 'Location', 'best'); % Display legend with labels
+
+hold off; % Release the hold on the current figure
+
+
+
+%%
+
+figure;
+hold on; % Hold on to plot multiple trajectories in the same figure
+grid on; % Enable grid
+title('Trajectory for different starting point, G=0.315');
+xlabel('X Component');
+ylabel('Y Component');
+zlabel('Z Component');
+
+% Generate colors for the trajectories
+colors = lines(5); % Generate 5 distinct colors
+
+% Loop through the first 5 trajectories
+for k = 1:5
+    % Compute the trajectory for each set
+    X(:, :, k) = X14(t, sample1(:, k), ws(3, k));
+    
+    % Extract X, Y, Z coordinates
+    X_k = X(1, :, k);
+    Y_k = X(2, :, k);
+    Z_k = X(3, :, k);
+    
+    % Plot the trajectory and assign legend labels
+    plot3(X_k, Y_k, Z_k, 'LineWidth', 2, 'Color', colors(k, :), 'DisplayName', ['Trajectory ' num2str(k)]);
+    
+    % Calculate velocity vectors for the current trajectory
+    V = get_vel(uField(:, 5), vField(:, 5), wField(:, 5), 64, X(:, :, k));
+    
+    % Scale vectors
+    V_scale = 1;
+    U_ = V(1, :) * V_scale; % X-components of vectors
+    V_ = V(2, :) * V_scale; % Y-components of vectors
+    W_ = V(3, :) * V_scale; % Z-components of vectors
+    
+    % Plot vectors at every 10th time step (no DisplayName for vectors)
+    step = 10; % Vector plotted every 10th time step
+    quiver3(X_k(1:step:end), Y_k(1:step:end), Z_k(1:step:end), ...
+            U_(1:step:end), V_(1:step:end), W_(1:step:end), 0.5, 'Color', colors(k, :), 'LineWidth', 1);
+end
+
+% Set specific axes limits
+xlim([0 1]);  % X-axis limits
+ylim([0 1]);  % Y-axis limits
+zlim([0 1]);  % Z-axis limits
+
+% Adjust the view angle for better 3D perception
+view(3); % Default 3D view
+
+% Add legend for trajectories only
+legend('show', 'Location', 'best');
+
+hold off; % Release the hold on the current figure
+
+
+
