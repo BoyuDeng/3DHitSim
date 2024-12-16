@@ -1,5 +1,7 @@
 function vel = get_single_velocity(pos, U, V, W, sizeo)
     % Initialize the velocity output array
+    % Ensure position stays in [0, 1] box with periodic boundary conditions
+    pos = mod(pos, 1); 
     vel = zeros(3,1);
     
     x = linspace(0,1,sizeo);
@@ -16,9 +18,9 @@ function vel = get_single_velocity(pos, U, V, W, sizeo)
     imaxo = sizeo;
     jmaxo = sizeo;
     kmaxo = sizeo;
-    imino = 0;
-    jmino = 0;
-    kmino = 0;
+    imino = 1;
+    jmino = 1;
+    kmino = 1;
 
 
     % Interpolate U velocity ------------------------------

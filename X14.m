@@ -55,7 +55,7 @@ function X = X14(t, coeffs, W)
     X(3, :) = X(3, :) + c0;
 
     % Validate that X is within [0, 1]
-    if any(X(:) < 0) || any(X(:) > 1)
-        warning('X contains values outside the range [0, 1].');
-    end
+    % if any(X(:) < 0) || any(X(:) > 1)
+    %     warning('X contains values outside the range [0, 1].');
+    % end
 end

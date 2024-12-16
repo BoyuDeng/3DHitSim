@@ -45,11 +45,8 @@ function vectors = get_vel(uField, vField, wField, sizeo, X)
             error('Velocity fields do not match the expected sizeo (%d x %d) at time step %d.', sizeo, sizeo, t);
         end
 
-        % Compute the velocity at the current position
-        try
-            vectors(:, t) = get_single_velocity(X(:, t), u, v, w, sizeo);
-        catch ME
-            error('Error in get_single_velocity at time step %d: %s', t, ME.message);
-        end
+% Compute the velocity at the current position
+vectors(:, t) = get_single_velocity(X(:, t), u, v, w, sizeo);
+
     end
 end
