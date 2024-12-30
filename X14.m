@@ -30,14 +30,14 @@ function X = X14(t, coeffs, W)
     end
 
     % Set odd-indexed elements of b to zero
-    %b(1:2:end) = 0;
-    b(:) = 0;
+    b(1:2:end) = 0;
+    %b(:) = 0;
 
     % Initialize constants
     last = coeffs(end-1);
-    a0 = last + 0.3;
+    a0 = last + 0.5;
     b0 = 0.1;
-    c0 = coeffs(end) + 0.7;
+    c0 = coeffs(end) + 0.5;
 
     % Initialize the result matrix X
     X = zeros(3, length(t));

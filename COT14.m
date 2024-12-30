@@ -1,8 +1,8 @@
-function [COT, G] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B)
+function [COT,Fdrag, G] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B)
     try
 
 
-        tau_p = 1e-2;
+        tau_p = 0.01;
         G = 9.8*tau_p/U;
         %St = tau_p*U/0.2;
         St = 0;
