@@ -45,9 +45,9 @@ StartLoc = [0.3, 0.5];
 coeze = zeros(5,1);
 
 %%
-uField = cell(numb1, 1);
-vField = cell(numb1, 1);
-wField = cell(numb1, 1);
+uField = cell(numb, 1);
+vField = cell(numb, 1);
+wField = cell(numb, 1);
 
 for i = 1:numb1
     data = variables_list{i};
@@ -62,13 +62,13 @@ end
 % 
 % [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
-U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
+U = calculateRMS(uField(1:500),vField(1:500),wField(1:500));
 
 G = calculateG(tau_p, U);
 
 
 %%
-[optimized_coeffs,optW, optimized_E] = optimization27para(t, W, uField, vField, wField, dt, p, U,Forcing);
+[optimized_coeffs,optW, optimized_E] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
 % Define the figure for plotting
@@ -103,7 +103,7 @@ hold off; % Release the hold on the current figure
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.1, OptW=1.19');
+title('Trajectory, G=0.014, OptW=U');
 xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
@@ -135,7 +135,7 @@ for k = 1:1
     % Plot vectors at every 10th time step (no DisplayName for vectors)
     step = 10; % Vector plotted every 10th time step
     quiver3(X_k(1:step:end), Y_k(1:step:end), Z_k(1:step:end), ...
-            U_(1:step:end), V_(1:step:end), W_(1:step:end), 1, 'Color', colors(k, :), 'LineWidth', 1);
+            U_(1:step:end), V_(1:step:end), W_(1:step:end), 1/U, 'Color', colors(k, :), 'LineWidth', 1);
 end
 
 % Set specific axes limits
