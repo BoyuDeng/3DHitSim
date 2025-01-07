@@ -1,8 +1,8 @@
-function [COT,Fdrag, G] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B)
+function [COT,Fdrag, G, ali] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B)
     try
 
 
-        tau_p = 0.01;
+        tau_p = 1;
         G = 9.8*tau_p/U;
         %St = tau_p*U/0.2;
         St = 0;
@@ -38,7 +38,7 @@ function [COT,Fdrag, G] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B
         % Calculate the drag forces
 
         Fdrag =(1/G)* (St*Du-(Velocity_fields./U - Vs./U) .* vecnorm(Velocity_fields./U - Vs./U).^(p-1));
-
+        ali = abs(Velocity_fields./U - Vs./U);
         Fdrag(3,:) = Fdrag(3,:) - B;
         
         COT = (G/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt/t(end));

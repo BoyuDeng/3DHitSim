@@ -6,7 +6,7 @@ dt = 1e-3;
 t = 0:dt:650*dt;
 W = 5; 
 p =1;
-tau_p=10;
+tau_p=0.01;
 Forcing = 1;
 
 StartLoc = [0.3, 0.5];
@@ -32,16 +32,17 @@ end
 
 U = calculateRMS(uField,vField,wField);
 
-G = calculateG(tau_p, U);
-
 %%
 [optimized_coeffs,optW, optimized_E] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
-[cot, FD, G] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
+[cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
 
 %%
 
+tail = sum(vecnorm(ali))/length(t);
+
+%%
 
 % Define the figure for plotting
 figure;
@@ -107,7 +108,7 @@ for k = 1:1
     % Plot vectors at every 10th time step (no DisplayName for vectors)
     step = 10; % Vector plotted every 10th time step
     quiver3(X_k(1:step:end), Y_k(1:step:end), Z_k(1:step:end), ...
-            U_(1:step:end), V_(1:step:end), W_(1:step:end), 0.5, 'Color', colors(k, :), 'LineWidth', 1);
+            U_(1:step:end), V_(1:step:end), W_(1:step:end), 1, 'Color', colors(k, :), 'LineWidth', 1);
 end
 
 % Set specific axes limits
