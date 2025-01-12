@@ -33,7 +33,7 @@ end
 U = calculateRMS(uField,vField,wField);
 
 %%
-[optimized_coeffs,optW, optimized_E] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
+[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimizationallresult(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
 [cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
@@ -80,14 +80,14 @@ title('Trajectory, G=0.014');
 xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
-
+nub=1;
 % Generate colors for the trajectories
 colors = lines(5); % Generate 5 distinct colors
 
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:,k) = X14(t, optimized_coeffs,optW);
+    X(:,:,k) = X14(t, all_solutions(nub,1:26),all_solutions(nub,27));
     % Extract X, Y, Z coordinates
     X_k = X(1, :, k);
     Y_k = X(2, :, k);
@@ -123,3 +123,6 @@ view(3); % Default 3D view
 legend('show', 'Location', 'best');
 
 hold off; % Release the hold on the current figure
+
+
+save('result2000.mat', 'optimized_coeffs');
