@@ -7,7 +7,7 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
 % Set bounds for the optimization problem
 
     lb = [-1 * ones(8, 1);-10 * ones(8, 1);-1 * ones(10, 1); 0.001];  % Lower bounds for coefficients and custom lower bound for W
-    ub = [1* ones(8, 1);10 * ones(8, 1);1 * ones(10, 1); 10];    % Upper bounds for coefficients and custom upper bound for W
+    ub = [1* ones(8, 1);10 * ones(8, 1);1 * ones(10, 1); 30];    % Upper bounds for coefficients and custom upper bound for W
 
 
 

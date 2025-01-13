@@ -62,15 +62,19 @@ end
 % 
 % [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
-U = calculateRMS(uField(1:500),vField(1:500),wField(1:500));
-
-G = calculateG(tau_p, U);
-
-
+U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %%
 [optimized_coeffs,optW, optimized_E] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
+[cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
+
+%%
+
+tail = sum(vecnorm(ali))/length(t);
+
+%%
+
 % Define the figure for plotting
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
@@ -89,9 +93,9 @@ colors = lines(10); % Generate 10 distinct colors
 
 
 % Set specific axes limits
-xlim([0 1]);  % X-axis limits
-ylim([0 1]);  % Y-axis limits
-zlim([0 1]);  % Z-axis limits
+% xlim([0 1]);  % X-axis limits
+% ylim([0 1]);  % Y-axis limits
+% zlim([0 1]);  % Z-axis limits
 
 % Adjust the view angle for better 3D perception
 view(3); % Default 3D view
@@ -103,7 +107,7 @@ hold off; % Release the hold on the current figure
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.014, OptW=U');
+title('Trajectory, G=0.014');
 xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
@@ -135,13 +139,13 @@ for k = 1:1
     % Plot vectors at every 10th time step (no DisplayName for vectors)
     step = 10; % Vector plotted every 10th time step
     quiver3(X_k(1:step:end), Y_k(1:step:end), Z_k(1:step:end), ...
-            U_(1:step:end), V_(1:step:end), W_(1:step:end), 1/U, 'Color', colors(k, :), 'LineWidth', 1);
+            U_(1:step:end), V_(1:step:end), W_(1:step:end), 1, 'Color', colors(k, :), 'LineWidth', 1);
 end
 
 % Set specific axes limits
-xlim([0 1]);  % X-axis limits
-ylim([0 1]);  % Y-axis limits
-zlim([0 1]);  % Z-axis limits
+% xlim([0 1]);  % X-axis limits
+% ylim([0 1]);  % Y-axis limits
+% zlim([0 1]);  % Z-axis limits
 
 % Adjust the view angle for better 3D perception
 view(3); % Default 3D view

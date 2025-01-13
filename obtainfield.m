@@ -57,7 +57,7 @@ step = 2; % Example step size for downsampling
 x = x(1:step:64, 1:step:64, 1:step:64);
 y = y(1:step:64, 1:step:64, 1:step:64);
 z = z(1:step:64, 1:step:64, 1:step:64);
-nu=602;
+nu=1000;
 % Assume uField, vField, and wField are cell arrays of matrices
 u = uField{nu};
 u = u{1};
