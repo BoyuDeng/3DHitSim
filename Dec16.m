@@ -30,6 +30,7 @@ for i = start_num:end_num
     varnames_list{i - start_num + 1} = varnames;
     variables_list{i - start_num + 1} = variables;
 end
+
 %%
 numb=2560;
 numb1=2561;
@@ -64,10 +65,11 @@ end
 
 U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %%
-[optimized_coeffs,optW, optimized_E] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
+[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t, W, uField, vField, wField, dt, p, U,Forcing);
+
 
 %%
-[cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
+[cot, FD, G, ali] = COT14(opt1(1:26),t,opt1(27), uField,vField,wField,dt,p,U,Forcing);
 
 %%
 
@@ -154,3 +156,7 @@ view(3); % Default 3D view
 legend('show', 'Location', 'best');
 
 hold off; % Release the hold on the current figure
+opt3 = all_solutions(1,:);
+
+save('result3.mat', 'opt3');
+

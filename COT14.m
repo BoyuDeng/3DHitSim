@@ -2,7 +2,7 @@ function [COT,Fdrag, G, ali] = COT14(coeffs, t, W, uField, vField, wField, dt, p
     try
 
 
-        tau_p = 1;
+        tau_p = 0.1;
         G = 9.8*tau_p/U;
         %St = tau_p*U/0.2;
         St = 0;

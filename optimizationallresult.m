@@ -5,8 +5,8 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
     initial_coeffs(27) = W;  % Set the initial guess for W
 
     % Set bounds for the optimization problem
-    lb = [-1 * ones(8, 1); -10 * ones(8, 1); -1 * ones(10, 1); 0.001];  % Lower bounds for coefficients and custom lower bound for W
-    ub = [1 * ones(8, 1); 10 * ones(8, 1); 1 * ones(10, 1); 10];  % Upper bounds for coefficients and custom upper bound for W
+    lb = [-1 * ones(8, 1); -1 * ones(8, 1); -1 * ones(10, 1); 0.001];  % Lower bounds for coefficients and custom lower bound for W
+    ub = [1 * ones(8, 1); 1 * ones(8, 1); 1 * ones(10, 1); 10];  % Upper bounds for coefficients and custom upper bound for W
 
     % Define optimization options using the interior-point algorithm
     options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'off');
