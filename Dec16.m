@@ -65,7 +65,9 @@ end
 
 U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %%
-[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t, W, uField, vField, wField, dt, p, U,Forcing);
+tic
+[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t(1:200), W, uField(1:200), vField(1:200), wField(1:200), dt, p, U,Forcing);  
+toc
 
 
 %%

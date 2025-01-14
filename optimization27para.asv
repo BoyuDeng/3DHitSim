@@ -15,13 +15,14 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
     uFieldConst = parallel.pool.Constant(uField);
     vFieldConst = parallel.pool.Constant(vField);
     wFieldConst = parallel.pool.Constant(wField);
+    ForcingConst = parallel.pool.Constant(Forcing);
 
     % Define optimization options using the interior-point algorithm
     options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'off', 'UseParallel', true);
 
     % Define the optimization problem for fmincon
     problem = createOptimProblem('fmincon', 'objective', ...
-        @(vars) COT14(vars(1:26), t, vars(27), uFieldConst.Value, vFieldConst.Value, wFieldConst.Value, dt, p, U, Forcing), ...
+        @(vars) COT14(vars(1:26), t, vars(27), uFieldConst.Value, vFieldConst.Value, wFieldConst.Value, dt, p, U, ForcingConst.Value), ...
         'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
     % Limit the number of workers to conserve memory
@@ -29,13 +30,12 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
     parpool('local', maxWorkers); % Start parallel pool with limited workers
 
     % Create a MultiStart object to perform the optimization
-    gs = GlobalSearch('NumTrialPoints', 500);
-    ms = MultiStart(gs);
+    ms = MultiStart('UseParallel', true);
 
     % Generate custom random starting points
 
     % Run the global optimization using MultiStart
-    [result, fval, exitflag, output, solutions] = run(ms, problem, 500);
+    [result, fval, exitflag, output, solutions] = run(ms, problem, 1000);
 
     % Extract the optimized coefficients and W from the best solution
     optimized_coeffs = result(1:26);
