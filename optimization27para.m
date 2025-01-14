@@ -1,4 +1,7 @@
-function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = optimization27para(t, W, uField, vField, wField, dt, p, U, Forcing)
+function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = optimizationallresult(t, W, uField, vField, wField, dt, p, U, Forcing)
+
+    % Specify the number of starting points internally
+    numStartPoints = 500; % Adjust this value as desired
 
     % Combine the coefficients and W into a single vector for optimization
     initial_coeffs = zeros(27, 1);  % 26 coefficients + 1 for W
@@ -13,24 +16,27 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
     uFieldConst = parallel.pool.Constant(uField);
     vFieldConst = parallel.pool.Constant(vField);
     wFieldConst = parallel.pool.Constant(wField);
+    ForcingConst = parallel.pool.Constant(Forcing);
 
     % Define optimization options using the interior-point algorithm
     options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'off', 'UseParallel', true);
 
     % Define the optimization problem for fmincon
     problem = createOptimProblem('fmincon', 'objective', ...
-        @(vars) COT14(vars(1:26), t, vars(27), uFieldConst.Value, vFieldConst.Value, wFieldConst.Value, dt, p, U, Forcing), ...
+        @(vars) COT14(vars(1:26), t, vars(27), uFieldConst.Value, vFieldConst.Value, wFieldConst.Value, dt, p, U, ForcingConst.Value), ...
         'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
     % Limit the number of workers to conserve memory
     maxWorkers = min(4, feature('numcores')); % Use up to 4 workers or the number of available cores
     parpool('local', maxWorkers); % Start parallel pool with limited workers
 
-    % Create a GlobalSearch object to perform the optimization
-    gs = GlobalSearch('NumTrialPoints', 1000, 'UseParallel', true); % Limit trial points to reduce memory usage
+    % Create a MultiStart object to perform the optimization
+    ms = MultiStart('UseParallel', true);
 
-    % Run the global optimization
-    [result, fval, exitflag, output, solutions] = run(gs, problem);
+    % Generate custom random starting points
+
+    % Run the global optimization using MultiStart
+    [result, fval, exitflag, output, solutions] = run(ms, problem, 1000);
 
     % Extract the optimized coefficients and W from the best solution
     optimized_coeffs = result(1:26);
@@ -40,12 +46,10 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
     totalEnergy = COT14(optimized_coeffs, t, optimized_W, uFieldConst.Value, vFieldConst.Value, wFieldConst.Value, dt, p, U, ForcingConst.Value);
 
     % Save all solutions (coefficients, W, and fval) in an array
-    num_solutions = length(solutions);
-    all_solutions = zeros(num_solutions, 28); % 26 coefficients + W + fval
-    for i = 1:num_solutions
-        all_solutions(i, 1:26) = solutions(i).X(1:26); % Coefficients
-        all_solutions(i, 27) = solutions(i).X(27);    % W
-        all_solutions(i, 28) = solutions(i).Fval;     % Objective value
+    all_solutions = [];
+    for i = 1:length(solutions)
+        sol = solutions(i).X; % Solution vector
+        all_solutions = [all_solutions; [sol(1:26), sol(27), solutions(i).Fval]]; % Store coefficients, W, and fval
     end
 
     % Clean up parallel pool to release memory

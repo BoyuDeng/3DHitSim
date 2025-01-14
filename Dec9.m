@@ -33,7 +33,7 @@ end
 U = calculateRMS(uField,vField,wField);
 
 %%
-[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimizationallresult(t, W, uField, vField, wField, dt, p, U,Forcing);
+[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
 [cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
