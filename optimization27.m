@@ -6,13 +6,13 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
 
 % Set bounds for the optimization problem
 
-    lb = [-1 * ones(8, 1);-10 * ones(8, 1);-1 * ones(10, 1); 0.001];  % Lower bounds for coefficients and custom lower bound for W
-    ub = [1* ones(8, 1);10 * ones(8, 1);1 * ones(10, 1); 30];    % Upper bounds for coefficients and custom upper bound for W
+    lb = [-1 * ones(8, 1);-1 * ones(8, 1);-1 * ones(10, 1); 5];  % Lower bounds for coefficients and custom lower bound for W
+    ub = [1* ones(8, 1);1 * ones(8, 1);1 * ones(10, 1); 10];    % Upper bounds for coefficients and custom upper bound for W
 
 
 
     % Define optimization options using the interior-point algorithm
-    options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'iter');
+    options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'Display', 'none');
 
     % Define the optimization problem for fmincon
     problem = createOptimProblem('fmincon', 'objective', ...
@@ -20,7 +20,7 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
         'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
     % Create a GlobalSearch object to perform the optimization
-    gs = GlobalSearch;
+      gs = GlobalSearch('NumTrialPoints', 1000);
 
     % Run the global optimization
     [result, fval] = run(gs, problem);
@@ -33,6 +33,7 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
     totalEnergy = COT14(optimized_coeffs, t, optimized_W, uField, vField, wField, dt, p, U, Forcing);
 
     % Display the result
-    disp('Optimized total energy:');
-    disp(totalEnergy);
+    % disp('Optimized total energy:');
+    % disp(totalEnergy);
 end
+

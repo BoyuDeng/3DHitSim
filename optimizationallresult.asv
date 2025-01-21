@@ -1,4 +1,4 @@
-function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = optimizationallresult(t, uField, vField, wField, dt, p, U, Forcing, customStartPoints)
+function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = optimizationallresult(t, W, uField, vField, wField, dt, p, U, Forcing)
 
     % Set bounds for the optimization problem
     lb = [-1 * ones(8, 1); -1 * ones(8, 1); -1 * ones(10, 1); 0.001];  % Lower bounds for coefficients and custom lower bound for W
@@ -12,9 +12,20 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
         @(vars) COT14(vars(1:26), t, vars(27), uField, vField, wField, dt, p, U, Forcing), ...
         'x0', zeros(27, 1), 'lb', lb, 'ub', ub, 'options', options);
 
-    % Validate the custom starting points
-    if size(customStartPoints, 2) ~= 27
-        error('customStartPoints must have 27 columns (26 coefficients + 1 W).');
+    % Create custom starting points
+    numStartPoints = 300; % Number of starting points
+    customStartPoints = zeros(numStartPoints, 27); % Initialize with zeros
+
+    % Uniformly distribute the first two coefficients within their bounds
+    rng('default'); % For reproducibility
+    for i = 1:numStartPoints
+        customStartPoints(i, 1) = lb(1) + (ub(1) - lb(1)) * rand(); % First coefficient
+        customStartPoints(i, 2) = lb(2) + (ub(2) - lb(2)) * rand(); % Second coefficient
+        customStartPoints(i, 9) = lb(1) + (ub(1) - lb(1)) * rand(); % First coefficient
+        customStartPoints(i, 10) = lb(2) + (ub(2) - lb(2)) * rand(); % Second coefficient
+        customStartPoints(i, 17) = lb(1) + (ub(1) - lb(1)) * rand(); % First coefficient
+        customStartPoints(i, 18) = lb(2) + (ub(2) - lb(2)) * rand(); % Second coefficient
+        customStartPoints(i, 27) = W; % Initialize W
     end
 
     % Create a CustomStartPointSet object

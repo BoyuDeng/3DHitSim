@@ -33,14 +33,45 @@ end
 U = calculateRMS(uField,vField,wField);
 
 %%
-[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t, W, uField, vField, wField, dt, p, U,Forcing);
+
+% % Define the number of divisions per coefficient (grid points per dimension)
+% numDivisions = 5; % Adjust this to control the grid density
+% 
+% % Bounds for the coefficients and W
+% lb = -1;  % Lower bound for coefficients
+% ub = 1;   % Upper bound for coefficients
+% W_fixed = 5; % Fixed value for W
+% 
+% % Generate evenly spaced points for each coefficient within the bounds
+% gridPoints = linspace(lb, ub, numDivisions);
+% 
+% % Create a grid for the selected coefficients (1, 2, 9, 10, 17, 18)
+% [C1, C2, C9, C10, C17, C18] = ndgrid(gridPoints, gridPoints, gridPoints, gridPoints, gridPoints, gridPoints);
+% 
+% % Combine all grid points into a single matrix
+% numStartPoints = numel(C1); % Total number of starting points
+% customStartPoints = zeros(numStartPoints, 27); % Initialize with zeros
+% 
+% % Flatten the grids and assign to the corresponding columns
+% customStartPoints(:, 1) = C1(:);   % Coefficient 1
+% customStartPoints(:, 2) = C2(:);   % Coefficient 2
+% customStartPoints(:, 9) = C9(:);   % Coefficient 9
+% customStartPoints(:, 10) = C10(:); % Coefficient 10
+% customStartPoints(:, 17) = C17(:); % Coefficient 17
+% customStartPoints(:, 18) = C18(:); % Coefficient 18
+% customStartPoints(:, 27) = W_fixed; % Set W to a fixed value
+
+
+[optimized_coeffs, optW, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
 [cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
+[cot, FD, G, ali1] = COT14(optimized_coeffs2,t,optW, uField,vField,wField,dt,p,U,Forcing);
 
 %%
 
 tail = sum(vecnorm(ali))/length(t);
+tail1 = sum(vecnorm(ali1))/length(t);
 
 %%
 
@@ -87,7 +118,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:,k) = X14(t, all_solutions(nub,1:26),all_solutions(nub,27));
+    X(:,:,k) = X14(t, optimized_coeffs,optW);
     % Extract X, Y, Z coordinates
     X_k = X(1, :, k);
     Y_k = X(2, :, k);
@@ -125,4 +156,5 @@ legend('show', 'Location', 'best');
 hold off; % Release the hold on the current figure
 
 
-save('result2000.mat', 'optimized_coeffs');
+save('result1k.mat', 'optimized_coeffs');
+save('W1k', 'optW')
