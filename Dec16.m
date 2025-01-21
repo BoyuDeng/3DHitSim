@@ -37,7 +37,7 @@ numb1=2561;
 
 dt = 1e-3;
 t = 0:dt:numb*dt;
-W = 1; 
+W = 7; 
 p =1;
 tau_p=1e-2;
 Forcing = 1;
@@ -66,7 +66,7 @@ end
 U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %%
 tic
-[optimized_coeffs, optW, totalEnergy, fval, all_solutions] = optimization27para(t(1:200), W, uField(1:200), vField(1:200), wField(1:200), dt, p, U,Forcing);  
+[optimized_coeffs, optW, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);  
 toc
 
 
@@ -115,7 +115,7 @@ title('Trajectory, G=0.014');
 xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
-
+nub=1;
 % Generate colors for the trajectories
 colors = lines(5); % Generate 5 distinct colors
 
@@ -158,7 +158,10 @@ view(3); % Default 3D view
 legend('show', 'Location', 'best');
 
 hold off; % Release the hold on the current figure
-opt3 = all_solutions(1,:);
 
-save('result3.mat', 'opt3');
+
+save('result1klin.mat', 'optimized_coeffs1');
+save('W1klin', 'optW1')
+
+
 
