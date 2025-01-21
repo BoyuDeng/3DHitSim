@@ -12,10 +12,15 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, all_solutions] = opt
         @(vars) COT14(vars(1:26), t, vars(27), uField, vField, wField, dt, p, U, Forcing), ...
         'x0', zeros(27, 1), 'lb', lb, 'ub', ub, 'options', options);
 
+<<<<<<< HEAD
     % Validate the custom starting points
     if size(customStartPoints, 2) ~= 27
         error('customStartPoints must have 27 columns (26 coefficients + 1 W).');
     end
+=======
+    % Create a GlobalSearch object to perform the optimization
+    gs = GlobalSearch('NumTrialPoints', 500);
+>>>>>>> 1d1a4fd6e081401d697792f152ca234f12bad312
 
     % Create a CustomStartPointSet object
     startPointSet = CustomStartPointSet(customStartPoints);
