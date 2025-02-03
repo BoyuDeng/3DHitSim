@@ -3,26 +3,33 @@ close all;clear,clc;
 load("fielddata624.mat");
 
 dt = 1e-3;
-t = 0:dt:650*dt;
+t = 0:dt:300*dt;
 W = 5; 
 p =1;
 tau_p=0.01;
 Forcing = 1;
 
-StartLoc = [0.3, 0.5];
-coeze = zeros(5,1);
+
 
 %%
-uField = cell(651, 1);
-vField = cell(651, 1);
-wField = cell(651, 1);
+fsize = 320;
+uField = cell(fsize, 1);
+vField = cell(fsize, 1);
+wField = cell(fsize, 1);
 
-for i = 1:651
-    data = variables_list{i};
+for i = 1:fsize
+    data = variables_list{i+300};
     uField{i} = data(1);
     vField{i} = data(2);
     wField{i} = data(3);
 end
+
+% for i = 1:fsize
+%     data = variables_list{i};
+%     uField{i} = data(1);
+%     vField{i} = data(2);
+%     wField{i} = data(3);
+% end
 
 % Ufactor = (1/6.975);
 % Ufactor = 1;
@@ -33,40 +40,42 @@ end
 U = calculateRMS(uField,vField,wField);
 
 %%
+% Parameters
+mode = 8;
 
-% % Define the number of divisions per coefficient (grid points per dimension)
-% numDivisions = 5; % Adjust this to control the grid density
-% 
-% % Bounds for the coefficients and W
-% lb = -1;  % Lower bound for coefficients
-% ub = 1;   % Upper bound for coefficients
-% W_fixed = 5; % Fixed value for W
-% 
-% % Generate evenly spaced points for each coefficient within the bounds
-% gridPoints = linspace(lb, ub, numDivisions);
-% 
-% % Create a grid for the selected coefficients (1, 2, 9, 10, 17, 18)
-% [C1, C2, C9, C10, C17, C18] = ndgrid(gridPoints, gridPoints, gridPoints, gridPoints, gridPoints, gridPoints);
-% 
-% % Combine all grid points into a single matrix
-% numStartPoints = numel(C1); % Total number of starting points
-% customStartPoints = zeros(numStartPoints, 27); % Initialize with zeros
-% 
-% % Flatten the grids and assign to the corresponding columns
-% customStartPoints(:, 1) = C1(:);   % Coefficient 1
-% customStartPoints(:, 2) = C2(:);   % Coefficient 2
-% customStartPoints(:, 9) = C9(:);   % Coefficient 9
-% customStartPoints(:, 10) = C10(:); % Coefficient 10
-% customStartPoints(:, 17) = C17(:); % Coefficient 17
-% customStartPoints(:, 18) = C18(:); % Coefficient 18
-% customStartPoints(:, 27) = W_fixed; % Set W to a fixed value
+% Define bounds
+lb = [-1 * ones(mode, 1); -1 * ones(mode/2, 1); -1 * ones(mode + 2, 1); 5];
+ub = [1 * ones(mode, 1); 1 * ones(mode/2, 1); 1 * ones(mode + 2, 1); 10];
+
+% Number of coefficients
+num_coeffs = length(lb);
+
+% Generate random coefficients within the bounds
+random_coeffs = lb + (ub - lb) .* rand(num_coeffs, 1);
+
+% Display the generated coefficients
+disp('Random coefficients within bounds:');
+disp(random_coeffs);
+    % initial_coeffs = zeros(2*mode+mode/2+3, 1);
+    % initial_coeffs(end) = W;
+
+[cotrand, F, G] = COT14(random_coeffs(1:end-1),t,random_coeffs(end), uField,vField,wField,dt,p,U,Forcing);
+
+
+%%
+
+
 
 
 [optimized_coeffs, optW, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);
 
 %%
-[cot, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
+[cot6, FD, G, ali] = COT14(optimized_coeffs,t,optW, uField,vField,wField,dt,p,U,Forcing);
 [cot, FD, G, ali1] = COT14(optimized_coeffs2,t,optW, uField,vField,wField,dt,p,U,Forcing);
+
+[cot1, FD, G, ali1] = COT14(optimized_coeffs1k,t,optW1k, uField,vField,wField,dt,p,U,Forcing);
+[cot5, FD, G, ali5] = COT14(optimized_coeffs5k,t,optW5k, uField,vField,wField,dt,p,U,Forcing);
+[cot8, FD, G, ali8] = COT14(optimized_coeffs8k,t,optW8k, uField,vField,wField,dt,p,U,Forcing);
 
 %%
 
@@ -107,7 +116,7 @@ hold off; % Release the hold on the current figure
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.014');
+title('Trajectory, 10k trial points');
 xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
@@ -118,7 +127,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:,k) = X14(t, optimized_coeffs,optW);
+    X(:,:,k) = X14(t, optimized_coeffs4,optW4);
     % Extract X, Y, Z coordinates
     X_k = X(1, :, k);
     Y_k = X(2, :, k);
@@ -156,5 +165,17 @@ legend('show', 'Location', 'best');
 hold off; % Release the hold on the current figure
 
 
-save('result1k.mat', 'optimized_coeffs');
-save('W1k', 'optW')
+% save('result281.mat', 'optimized_coeffs1');
+% save('W281', 'optW1')
+
+
+%%
+xasix = [20000, 5000, 5000, 10000, 10000, 3000, 3000];
+yasix = [cot/cot6,cot1/cot6,cot2/cot6,cot3/cot6,cot4/cot6,cot5/cot6,cot6/cot6];
+plot(xasix, yasix,'o')
+title('Trajectory, 10k trial points');
+xlabel('Number of Trialpoints');
+ylabel('COT normalized by largest COT');
+
+
+

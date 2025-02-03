@@ -1,28 +1,29 @@
 function X = X14(t, coeffs, W)
     % Validate inputs
-    if nargin < 3
-        error('X14 requires three inputs: t, coeffs, and W.');
-    end
-    if length(coeffs) < 3
-        error('Coeffs must have at least 3 elements.');
-    end
-    if mod(length(coeffs) - 2, 3) ~= 0
-        error('Coeffs length must satisfy length(coeffs) = 3n + 2.');
-    end
-    if isempty(t) || ~isnumeric(t)
-        error('Time vector t must be a non-empty numeric array.');
-    end
-    if ~isscalar(W) || ~isnumeric(W)
-        error('W must be a scalar numeric value.');
-    end
+    % if nargin < 3
+    %     error('X14 requires three inputs: t, coeffs, and W.');
+    % end
+    % if length(coeffs) < 3
+    %     error('Coeffs must have at least 3 elements.');
+    % end
+    % if mod(length(coeffs) - 2, 3) ~= 0
+    %     error('Coeffs length must satisfy length(coeffs) = 3n + 2.');
+    % end
+    % if isempty(t) || ~isnumeric(t)
+    %     error('Time vector t must be a non-empty numeric array.');
+    % end
+    % if ~isscalar(W) || ~isnumeric(W)
+    %     error('W must be a scalar numeric value.');
+    % end
 
     % Determine the number of terms in the sums
-    n = (length(coeffs) - 2) / 3;
-
+    n = (length(coeffs) - 2)*(2 / 5);
+    
     % Extract coefficients for a, b, and c from the single coeffs vector
     a = coeffs(1:n);
-    b = coeffs(n+1:2*n);
-    c = coeffs(2*n+1:end-2);
+    b = zeros(length(a),1);
+    b(2:2:end) = coeffs(n+1:3*n/2);
+    c = coeffs((3*n/2)+1:end-2);
 
     % Ensure coefficients are non-empty and valid
     if isempty(a) || isempty(b) || isempty(c)

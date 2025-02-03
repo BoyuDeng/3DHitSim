@@ -1,14 +1,14 @@
 function V = Du14(t, coeffs)
     % Determine the number of terms in the sums
-    n = (length(coeffs)-2) / 3;
+    n = (length(coeffs) - 2)*(2 / 5);
     
     % Extract coefficients for a, b, and c from the single coeffs vector
     a = coeffs(1:n);
-    b = coeffs(n+1:2*n);
-    c = coeffs(2*n+1:end-2);
+    b = zeros(length(a),1);
+    b(2:2:end) = coeffs(n+1:3*n/2);
+    c = coeffs((3*n/2)+1:end-2);
     
-    % Set odd-indexed elements of b to zero
-    b(1:2:end) = 0;
+    
     
     % Initialize the result matrix V
     V = zeros(3, length(t));
