@@ -54,5 +54,5 @@ function RMS = calculateRMS(uField, vField, wField)
     Vrms = sqrt(meanVPrimeSquared);
     Wrms = sqrt(meanWPrimeSquared);
 
-    RMS = sqrt(Urms^2+Vrms^2+Wrms^2);
+    RMS = sqrt((Urms^2+Vrms^2+Wrms^2)/3);
 end

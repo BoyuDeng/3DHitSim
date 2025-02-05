@@ -32,8 +32,8 @@ for i = start_num:end_num
 end
 
 %%
-numb=2560;
-numb1=2561;
+numb=300;
+numb1=301;
 
 dt = 1e-3;
 t = 0:dt:numb*dt;
@@ -160,8 +160,8 @@ legend('show', 'Location', 'best');
 hold off; % Release the hold on the current figure
 
 
-save('result1klin.mat', 'optimized_coeffs1');
-save('W1klin', 'optW1')
+save('result10klin.mat', 'optimized_coeffs');
+save('W10klin', 'optW')
 
 
 

@@ -23,7 +23,7 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
         'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
     % Create a GlobalSearch object to perform the optimization
-      gs = GlobalSearch('NumTrialPoints', 20000);
+      gs = GlobalSearch('NumTrialPoints', 10000);
 
     % Run the global optimization
     [result, fval] = run(gs, problem);
