@@ -5,15 +5,15 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, initial_coeffs] = op
 
 
     % Combine coefficients and W into a single vector
-    initial_coeffs = zeros(2*mode+mode/2+3, 1);
-    initial_coeffs(end) = W;
+    initial_coeffs = randn(2*mode + mode/2 + 3, 1);
+    initial_coeffs(end) = W;  % Keep W as given
 
    
 
 
     % Define bounds
-    lb = [-1 * ones(mode, 1); -1 * ones(mode/2, 1); -1 * ones(mode + 2, 1); 5];
-    ub = [1 * ones(mode, 1); 1 * ones(mode/2, 1); 1 * ones(mode + 2, 1); 10];
+    lb = [-1 * ones(mode, 1); -1 * ones(mode/2, 1); -1 * ones(mode + 2, 1); 1];
+    ub = [1 * ones(mode, 1); 1 * ones(mode/2, 1); 1 * ones(mode + 2, 1); 7];
 
     % Objective function
     obj_fun = @(vars) COT14(vars(1:end-1), t, vars(end), uField, vField, wField, dt, p, U, Forcing);
@@ -25,8 +25,8 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval, initial_coeffs] = op
         'MaxIterations', 1000000, ...
         'MaxFunctionEvaluations', 200000, ...
         'TemperatureFcn', @temperatureboltz, ...
-        'InitialTemperature', 1000, ...
-        'ReannealInterval', 500);
+        'InitialTemperature', 5000, ...
+        'ReannealInterval', 1000);
 
     % Perform simulated annealing
     [result, fval] = simulannealbnd(obj_fun, initial_coeffs, lb, ub, options);

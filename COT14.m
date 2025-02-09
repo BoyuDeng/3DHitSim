@@ -41,7 +41,7 @@ function [COT,Fdrag, G, ali] = COT14(coeffs, t, W, uField, vField, wField, dt, p
         ali = abs(Velocity_fields./U - Vs./U);
         Fdrag(3,:) = Fdrag(3,:) - B;
         
-        COT = (G/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt/t(end));
+        COT = ((G*U)/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
 
         
     catch ME

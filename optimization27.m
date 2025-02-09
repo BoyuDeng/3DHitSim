@@ -9,8 +9,8 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
 
     
     % Define bounds
-    lb = [-1 * ones(mode, 1); -1 * ones(mode/2, 1); -1 * ones(mode + 2, 1); 5];
-    ub = [1 * ones(mode, 1); 1 * ones(mode/2, 1); 1 * ones(mode + 2, 1); 10];
+    lb = [-1 * ones(mode, 1); -1 * ones(mode/2, 1); -1 * ones(mode + 2, 1); 0.5];
+    ub = [1 * ones(mode, 1); 1 * ones(mode/2, 1); 1 * ones(mode + 2, 1); 8];
 
 
 

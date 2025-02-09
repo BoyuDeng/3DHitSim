@@ -3,7 +3,7 @@ close all;clear,clc;
 load("fielddata624.mat");
 
 dt = 1e-3;
-t = 0:dt:650*dt;
+t = 0:dt:300*dt;
 W = 4; 
 p =1;
 tau_p=0.01;
@@ -12,13 +12,13 @@ Forcing = 1;
 
 
 %%
-fsize = 651;
+fsize = 320;
 uField = cell(fsize, 1);
 vField = cell(fsize, 1);
 wField = cell(fsize, 1);
 
 for i = 1:fsize
-    data = variables_list{i};
+    data = variables_list{i+300};
     uField{i} = data(1);
     vField{i} = data(2);
     wField{i} = data(3);
@@ -116,10 +116,10 @@ hold off; % Release the hold on the current figure
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.24');
-xlabel('X/L');
-ylabel('Y/L');
-zlabel('Z/L');
+title('Trajectory, 10k trial points');
+xlabel('X/L Component');
+ylabel('Y/L Component');
+zlabel('Z/L Component');
 nub=1;
 L = 0.17; % Define L for normalization
 
@@ -158,7 +158,6 @@ xlim([0 1/L]);  % Normalized X-axis limits
 ylim([0 2/L]);  % Normalized Y-axis limits
 zlim([0 1/L]);  % Normalized Z-axis limits
 
-axis equal
 % Adjust the view angle for better 3D perception
 view(3); % Default 3D view
 
@@ -168,9 +167,9 @@ legend('show', 'Location', 'best');
 hold off; % Release the hold on the current figure
 
 
-% 
-% save('resultfeb8first650.mat', 'optimized_coeffs');
-% save('Wfeb8first650', 'optW')
+
+% save('resultnewfirst300.mat', 'optimized_coeffs');
+% save('Wnewfirst300', 'optW')
 
 
 %%
