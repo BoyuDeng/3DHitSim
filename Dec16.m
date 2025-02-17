@@ -37,7 +37,7 @@ numb1=301;
 
 dt = 1e-3;
 t = 0:dt:numb*dt;
-W = 7; 
+W = 4; 
 p =1;
 tau_p=1e-2;
 Forcing = 1;
@@ -66,12 +66,23 @@ end
 U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %%
 tic
-[optimized_coeffs, optW, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing);  
+[optimized_coeffs1, optW1, totalEnergy1, fval1] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 5000);  
+
+
+[optimized_coeffs2, optW2, totalEnergy2, fval2] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 5000); 
+
+
+[optimized_coeffs3, optW3, totalEnergy3, fval3] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 10000); 
+
+
+[optimized_coeff4, optW4, totalEnergy4, fval4] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing,10000); 
+
+[optimized_coeffs5, optW5, totalEnergy5, fval5] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 13000); 
 toc
 
 
 %%
-[cot, FD, G, ali] = COT14(opt1(1:26),t,opt1(27), uField,vField,wField,dt,p,U,Forcing);
+[cot, FD, G, ali] = COT14(optimized_coeffs5(1:end-1),t,optW5(27), uField,vField,wField,dt,p,U,Forcing);
 
 %%
 

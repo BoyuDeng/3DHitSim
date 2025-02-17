@@ -1,7 +1,6 @@
-function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U, Forcing)
-    mode = 20;
-    lim=1;
-
+function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, trialpoints, mode, tau_p, wlow,whigh)
+    % mode = mode;
+    lim=0.4;
 
     % Combine coefficients and W into a single vector
     initial_coeffs = zeros(2*mode+mode/2+3, 1);
@@ -9,8 +8,8 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
 
     
     % Define bounds
-    lb = [-lim * ones(mode, 1); -lim * ones(mode/2, 1); -lim * ones(mode + 2, 1); 0.5];
-    ub = [lim * ones(mode, 1); lim * ones(mode/2, 1); lim * ones(mode + 2, 1); 8];
+    lb = [-lim * ones(mode, 1); -lim * ones(mode/2, 1); -lim * ones(mode + 2, 1); wlow];
+    ub = [lim * ones(mode, 1); lim * ones(mode/2, 1); lim * ones(mode + 2, 1); whigh];
 
 
 
@@ -19,11 +18,11 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
 
     % Define the optimization problem for fmincon
     problem = createOptimProblem('fmincon', 'objective', ...
-        @(vars) COT14(vars(1:end-1), t, vars(end), uField, vField, wField, dt, p, U, Forcing), ...
+        @(vars) COT14(vars(1:end-1), t, vars(end), uField, vField, wField, dt, p, U, Forcing, tau_p), ...
         'x0', initial_coeffs, 'lb', lb, 'ub', ub, 'options', options);
 
     % Create a GlobalSearch object to perform the optimization
-      gs = GlobalSearch('NumTrialPoints', 5000);
+      gs = GlobalSearch('NumTrialPoints', trialpoints);
 
     % Run the global optimization
     [result, fval] = run(gs, problem);
@@ -33,7 +32,7 @@ function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, 
     optimized_W = result(end);
 
     % Calculate the total energy using the optimized coefficients and W
-    totalEnergy = COT14(optimized_coeffs, t, optimized_W, uField, vField, wField, dt, p, U, Forcing);
+    totalEnergy = COT14(optimized_coeffs, t, optimized_W, uField, vField, wField, dt, p, U, Forcing, tau_p);
 
     % Display the result
     % disp('Optimized total energy:');
