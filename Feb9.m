@@ -1,12 +1,12 @@
-% close all;clear,clc;
+%close all;clear,clc;
 
 % Define the file path
-file_path = '/Users/boyi/Simulations/hit/output_fields';
+file_path = '/Users/boyi/Simulations/hitG/output_fields';
 
 
 % Define the range of file numbers
 start_num = 350;
-end_num = 1050;
+end_num = 450;
 
 % Initialize cell arrays to store the results
 dims_list = cell(end_num - start_num + 1, 1);
@@ -65,33 +65,6 @@ end
 % [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
 U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
-%%
-% tic
-% 
-% 
-% %[optimized_coeffs1, optW1, totalEnergy1, fval1] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 10000, 22);  
-% 
-% 
-% [optimized_coeffs2, optW2, totalEnergy2, fval2] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 30000, 22); 
-% 
-% % 
-% % [optimized_coeffs3, optW3, totalEnergy3, fval3] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 10000); 
-% % 
-% % 
-% % [optimized_coeffs4, optW4, totalEnergy4, fval4] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing,10000); 
-% % 
-% % [optimized_coeffs5, optW5, totalEnergy5, fval5] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 13000); 
-% % 
-% % 
-% % [optimized_coeffs6, optW6, totalEnergy6, fval6] = optimization27(t, W, uField, vField, wField, dt, p, U,Forcing, 13000);
-% 
-[optimized_coeffs7, optW7, totalEnergy7, fval7] = optimization27(t(1:300), W, uField(1:300), vField(1:300), wField(1:300), dt, p, U,Forcing, 30000, 12);
-% 
-% %[optimized_coeffs8, optW8, totalEnergy8, fval8] = optimization27(t(1:300), W, uField(1:300), vField(1:300), wField(1:300), dt, p, U,Forcing, 15000, 12);
-% 
-% %[optimized_coeffs9, optW9, totalEnergy9, fval9] = optimization27(t(1:300), W, uField(300:600), vField(300:600), wField(300:600), dt, p, U,Forcing, 10000, 12);
-% 
-% toc
 
 
 %%
@@ -100,67 +73,86 @@ U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 %parpool; % Start parallel pool
 
 N = 14; % Number of parallel searches
-results = cell(1, N);
-fvals = cell(1, N);
+resultsU8new_3 = cell(1, N);
+fvalsU8new_3 = cell(1, N);
 
-results3h30k = cell(1, N);
-fvals3h30k = cell(1, N);
 
-results6 = cell(1, N);
-fvals6 = cell(1, N);
+resultsU8_3high = cell(1, N);
+fvalsU8_3high = cell(1, N);
 
 
 G = [0.01;0.05;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
-
+Glow = G(4:2:6);
 Ghigh = [2,2.5,3,4,5,6,7,8,9,10,11,15,20,25];
+highlim = [40,50,60,70,80,90,100,200,300,400,500,500,500,500];
 
 parfor i = 1:N
-    [results{i}.coeffs, results{i}.W, results{i}.energy, fvals{i}] = ...
-        optimization27(t(1:700), W, uField(1:700), vField(1:700), wField(1:700), dt, p, U, Forcing, 30000, 20, G(i),2, 7);
+    [resultsU8new_3{i}.coeffs, resultsU8new_3{i}.W, resultsU8new_3{i}.energy, fvalsU8new_3{i}] = ...
+        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 20, G(i),5, 30);
 end
 
 parfor i = 1:N
-    [results6{i}.coeffs, results6{i}.W, results6{i}.energy, fvals6{i}] = ...
-        optimization27(t(1:700), W, uField(1:700), vField(1:700), wField(1:700), dt, p, U, Forcing, 30000, 20, G(i),2,7);
+    [resultsU8_3high{i}.coeffs, resultsU8_3high{i}.W, resultsU8_3high{i}.energy, fvalsU8_3high{i}] = ...
+        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 32, Ghigh(i),7, highlim(i));
 end
 
-parfor i = 1:N
-    [results7hhigh{i}.coeffs, results7hhigh{i}.W, results7hhigh{i}.energy, fvals7hhigh{i}] = ...
-        optimization27(t(1:700), W, uField(1:700), vField(1:700), wField(1:700), dt, p, U, Forcing, 30000, 20, Ghigh(i),3,15);
-end
 
 
 %%
-for i = 3:length(G)
-    
-    % Plot each point
-    plot(G(i), double(fvals1{i})/1.611, 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'b');
-    hold on; % Hold the plot to overlay multiple points
+colors = {'b', 'r', 'g', 'm', 'c', 'k'}; % Extend this if needed
+markers = {'o', 's', 'd', '^', 'v', 'p'}; % Extend this if needed
+
+hold on; % Hold the plot to overlay multiple points
+
+for i = 1:length(G)
+    % Plot each fvals dataset with a different color and marker
+    plot(G(i), resultsU8_1{i}.energy, markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
+    plot(G(i), resultsU8_2{i}.energy, markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
+    % plot(G(i), cotnew1(i), markers{3}, 'MarkerSize', 6, 'MarkerFaceColor', colors{3});
+    % plot(G(i), cotnew2(i), markers{4}, 'MarkerSize', 6, 'MarkerFaceColor', colors{4});
+    plot(Ghigh(i), resultsU8high{i}.energy, markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
 end
-set(gca, 'XScale', 'log');
+
+set(gca, 'XScale', 'log'); % Set X-axis to log scale
+
 % Adding labels and title
 xlabel('G');
 ylabel('cot');
 title('Plot of cot vs G');
+
 grid on;
+
+% Adding legend
+legend({'flow1 1', 'flow1 2','flow1 high G'}, 'Location', 'best');
+
 hold off; % Release the plot hold
 
 
+
+
+%%
+COT = zeros(1, length(G));
+Fdrag = zeros(3, length(t), length(G));
+ali = zeros(1, length(G));
+for i = 1:14
+[COT(i),Fdrag(:,:,i), ~, ~] = COT14(resultsU8_2high{i}.coeffs, t, resultsU8_2high{i}.W, uField, vField, wField, dt, p,U, 1, Ghigh(i));
+ali(i) = sum(vecnorm(Fdrag(:,:,i)));
+end
 
 %%
 % Given data
 
-% Initialize arrays for cot and G
-cot = zeros(1, length(G)); % Preallocate cot array
-am = 4;
+% % Initialize arrays for cot and G
+cothigh = zeros(1, length(G)); % Preallocate cot array
+am = 3;
 % Use a for loop to iterate over each value of G
 for i = 1:length(G)
     % Call COT14 for each value of G(i)
     then = i;
-    [cot(then)] = COT14(results1{am}.coeffs,t(1:300),results1{am}.W, uField(1:300),vField(1:300),wField(1:300),dt,p,U,Forcing, G(then));
-    
+    [cothigh(then)] = COT14(results7hhigh10k{i}.coeffs,t(1:700),results7hhigh10k{i}.W, uField(1:700),vField(1:700),wField(1:700),dt,p,U,Forcing, Ghigh(then));
+
     % Plot each point
-    plot(G(i), cot(i)/1.611, 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'b');
+    plot(Ghigh(i), cothigh(i), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'b');
     hold on; % Hold the plot to overlay multiple points
 end
 
@@ -177,23 +169,45 @@ hold off; % Release the plot hold
 
 
 
-%%
-then = 12;
-thecoeffs = results1{then}.coeffs;
-thew = results1{then}.W;
-[cot, fd, gt, ali] = COT14(results1{then}.coeffs,t(1:300),results1{then}.W, uField(1:300),vField(1:300),wField(1:300),dt,p,U,Forcing, G(then));
-% [cot, FD, G, ali1] = COT14(optimized_coeffs2,t,optW, uField,vField,wField,dt,p,U,Forcing);
-% 
-% [cot1, FD, G, ali1] = COT14(optimized_coeffs1k,t,optW1k, uField,vField,wField,dt,p,U,Forcing);
-% [cot5, FD, G, ali5] = COT14(optimized_coeffs5k,t,optW5k, uField,vField,wField,dt,p,U,Forcing);
-% [cot8, FD, G, ali8] = COT14(optimized_coeffs8k,t,optW8k, uField,vField,wField,dt,p,U,Forcing);
+% %%
+% then = 12;
+% thecoeffs = results1{then}.coeffs;
+% thew = results1{then}.W;
+% [cot, fd, gt, ali] = COT14(results1{then}.coeffs,t(1:300),results1{then}.W, uField(1:300),vField(1:300),wField(1:300),dt,p,U,Forcing, G(then));
+% % [cot, FD, G, ali1] = COT14(optimized_coeffs2,t,optW, uField,vField,wField,dt,p,U,Forcing);
+% % 
+% % [cot1, FD, G, ali1] = COT14(optimized_coeffs1k,t,optW1k, uField,vField,wField,dt,p,U,Forcing);
+% % [cot5, FD, G, ali5] = COT14(optimized_coeffs5k,t,optW5k, uField,vField,wField,dt,p,U,Forcing);
+% % [cot8, FD, G, ali8] = COT14(optimized_coeffs8k,t,optW8k, uField,vField,wField,dt,p,U,Forcing);
 
 %%
-drag = sum((vecnorm(fd).^2).^(3/4));
-tail = sum(vecnorm(ali))/length(t(1:300));
-%tail1 = sum(vecnorm(ali1))/length(t);
+num_results = length(results7h30knew1); % Get the number of elements in results
+tail_values1 = zeros(1, num_results); % Preallocate array for tail values
+
+% Loop through each result and compute the tail value
+for i = 1:num_results
+    % [cot, FD, ~, ali] = COT14(results7h30knew1{i}.coeffs, t, results7h30knew1{i}.W, ...
+    %                            uField, vField, wField, ...
+    %                            dt, p, U, Forcing, G(i));
+    % tail_values(i) = sum(vecnorm(ali)) / length(t);
+        [cot, FD, ~, ali] = COT14(results7h30k1{i}.coeffs, t, results7h30k1{i}.W, ...
+                               uField, vField, wField, ...
+                               dt, p, U, Forcing, G(i));
+    tail_values1(i) = sum(vecnorm(ali)) / length(t);
+
+
+    % plot(G(i), tail_values(i), markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
+    % plot(G(i), cot2(i), markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
+end
+
+% Find the minimum tail value and its index
+[min_tail, min_index] = min(tail_values1);
+
+% Display results
+fprintf('Minimum tail value: %f at index %d\n', min_tail, min_index);
 
 %%
+G = [0.01;0.05;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
 
 % Define the figure for plotting
 figure;
@@ -204,30 +218,54 @@ xlabel('X Component');
 ylabel('Y Component');
 zlabel('Z Component');
 
-% Loop through the first 10 trajectories
-colors = lines(10); % Generate 10 distinct colors
+% Loop through the first 5 trajectories
+colors = lines(5); % Generate 5 distinct colors
 
-    X(:,:) = X14(t, thecoeffs,thew);
-    plot3(X(1, :), X(2, :), X(3, :), 'LineWidth', 2, 'Color', colors(1, :));
+L = 0.17; % Ensure L is defined appropriately
 
+for i = 1:5
+    X(:,:) = X14(t, resultsU8_2{i}.coeffs, resultsU8_2{i}.W);
+    plot3(X(1, :)/L, X(2, :)/L, X(3, :)/L, 'LineWidth', 2, 'Color', colors(i, :));
+end
 
+% Set specific axes limits (adjusted to account for L)
+xlim([0 4/L]);  % Normalized X-axis limits
+ylim([0 1/L]);  % Normalized Y-axis limits
+zlim([0 1/L]);  % Normalized Z-axis limits
 
-% Set specific axes limits
-% xlim([0 1]);  % X-axis limits
-% ylim([0 1]);  % Y-axis limits
-% zlim([0 1]);  % Z-axis limits
-
+axis equal;
 % Adjust the view angle for better 3D perception
 view(3); % Default 3D view
+
+% Create legend labels using the first five values of G
+legendLabels = arrayfun(@(g) sprintf('G = %.2f', g), G(1:5), 'UniformOutput', false);
+
+% Add legend for trajectories
+legend(legendLabels, 'Location', 'best');
 
 hold off; % Release the hold on the current figure
 
 
+
 %%
+
+
+num_time_steps = length(t);  % Number of time steps
+X = zeros(3, num_time_steps);
+% Preallocate trajectory coordinates
+X_k = zeros(1, num_time_steps);
+Y_k = zeros(1, num_time_steps);
+Z_k = zeros(1, num_time_steps);
+
+% Preallocate velocity components
+U_ = zeros(1, num_time_steps);
+V_ = zeros(1, num_time_steps);
+W_ = zeros(1, num_time_steps);
+
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.24');
+title('Trajectory, G=0.4');
 xlabel('X/L');
 ylabel('Y/L');
 zlabel('Z/L');
@@ -240,7 +278,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:) = X14(t, thecoeffs,thew);
+    X(:,:) = X14(t, results7h30knew1{1}.coeffs,results7h30knew1{1}.W);
     % Extract X, Y, Z coordinates and normalize by L
     X_k = X(1, :, k) / L;
     Y_k = X(2, :, k) / L;
@@ -266,7 +304,7 @@ end
 
 % Set specific axes limits (adjusted to account for L)
 xlim([0 1/L]);  % Normalized X-axis limits
-ylim([0 2/L]);  % Normalized Y-axis limits
+ylim([0 1/L]);  % Normalized Y-axis limits
 zlim([0 1/L]);  % Normalized Z-axis limits
 
 axis equal
@@ -284,13 +322,6 @@ hold off; % Release the hold on the current figure
 % save('Wfeb8first650', 'optW')
 
 
-%%
-xasix = [20000, 5000, 5000, 10000, 10000, 3000, 3000];
-yasix = [cot/cot6,cot1/cot6,cot2/cot6,cot3/cot6,cot4/cot6,cot5/cot6,cot6/cot6];
-plot(xasix, yasix,'o')
-title('Trajectory, 10k trial points');
-xlabel('Number of Trialpoints');
-ylabel('COT normalized by largest COT');
 
 %%
 
@@ -302,5 +333,16 @@ save(filename, 'results1', 'results2', 'results3', ...
                'results3h30k', 'results7h30k1', 'results7h30k2');
 
 
+save('feb19data.mat', 'results7h30knew1', 'results7h30knew2', 'results7hhigh', ...
+               'results7hhigh10k');
 
 
+
+
+
+save('feb25data.mat', 'resultsU8_1','resultsU8_2','resultsU8high','results7hlimhigh');
+
+
+save('feb26data.mat', 'resultsU8_2high','resultsU8new_2');
+
+save('feb27data.mat', 'resultsU8_3high','resultsU8new_3');
