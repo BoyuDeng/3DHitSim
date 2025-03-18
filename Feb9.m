@@ -1,12 +1,12 @@
 %close all;clear,clc;
 
 % Define the file path
-file_path = '/Users/boyi/Simulations/hitG/output_fields';
+file_path = '/Users/boyi/Simulations/hit/output_fields2U=8';
 
 
 % Define the range of file numbers
 start_num = 350;
-end_num = 450;
+end_num = 1050;
 
 % Initialize cell arrays to store the results
 dims_list = cell(end_num - start_num + 1, 1);
@@ -36,7 +36,7 @@ end
 
 %%
 numb=700;
-numb1=701;
+numb1=numb+1;
 
 dt = 1e-3;
 t = 0:dt:numb*dt;
@@ -72,30 +72,35 @@ U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
 
 %parpool; % Start parallel pool
 
+
 N = 14; % Number of parallel searches
-resultsU8new_3 = cell(1, N);
-fvalsU8new_3 = cell(1, N);
+resultsU4_8 = cell(1, N);
+fvalsU4_8 = cell(1, N);
+
+resultsU4_9 = cell(1, N);
+fvalsU4_9 = cell(1, N);
 
 
-resultsU8_3high = cell(1, N);
-fvalsU8_3high = cell(1, N);
+% resultsU8_3high = cell(1, N);
+% fvalsU8_3high = cell(1, N);
 
 
-G = [0.01;0.05;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
+G = [0.01;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
 Glow = G(4:2:6);
 Ghigh = [2,2.5,3,4,5,6,7,8,9,10,11,15,20,25];
+lowlim = [7,3,2,3,3,3,3,3,3,3,3,3,3,3];
+highlimU = [8,4,8,10,10,10,10,10,10,10,10,10,10,10];
 highlim = [40,50,60,70,80,90,100,200,300,400,500,500,500,500];
 
 parfor i = 1:N
-    [resultsU8new_3{i}.coeffs, resultsU8new_3{i}.W, resultsU8new_3{i}.energy, fvalsU8new_3{i}] = ...
-        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 20, G(i),5, 30);
-end
+    [resultsU4_8{i}.coeffs, resultsU4_8{i}.W, resultsU4_8{i}.energy, fvalsU4_8{i}] = ...
+        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 20, G(i),lowlim(i), highlimU(i),1);
+end 
 
 parfor i = 1:N
-    [resultsU8_3high{i}.coeffs, resultsU8_3high{i}.W, resultsU8_3high{i}.energy, fvalsU8_3high{i}] = ...
-        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 32, Ghigh(i),7, highlim(i));
-end
-
+    [resultsU4_9{i}.coeffs, resultsU4_9{i}.W, resultsU4_9{i}.energy, fvalsU4_9{i}] = ...
+        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 60000, 20, G(i),lowlim(i), highlimU(i),1);
+end 
 
 
 %%
@@ -106,26 +111,28 @@ hold on; % Hold the plot to overlay multiple points
 
 for i = 1:length(G)
     % Plot each fvals dataset with a different color and marker
-    plot(G(i), resultsU8_1{i}.energy, markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
-    plot(G(i), resultsU8_2{i}.energy, markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
+    plot(G(i), ali2(i), markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
+    plot(G(i), ali3(i), markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
     % plot(G(i), cotnew1(i), markers{3}, 'MarkerSize', 6, 'MarkerFaceColor', colors{3});
     % plot(G(i), cotnew2(i), markers{4}, 'MarkerSize', 6, 'MarkerFaceColor', colors{4});
-    plot(Ghigh(i), resultsU8high{i}.energy, markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
+    plot(Ghigh(i), alihigh(i), markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
 end
 
 set(gca, 'XScale', 'log'); % Set X-axis to log scale
 
 % Adding labels and title
 xlabel('G');
-ylabel('cot');
-title('Plot of cot vs G');
+ylabel('u w diff');
+title('Plot of u w diff vs G');
 
 grid on;
 
 % Adding legend
-legend({'flow1 1', 'flow1 2','flow1 high G'}, 'Location', 'best');
+legend({'run 1', 'run 2','run with high G'}, 'Location', 'best');
 
 hold off; % Release the plot hold
+
+
 
 
 
@@ -135,8 +142,8 @@ COT = zeros(1, length(G));
 Fdrag = zeros(3, length(t), length(G));
 ali = zeros(1, length(G));
 for i = 1:14
-[COT(i),Fdrag(:,:,i), ~, ~] = COT14(resultsU8_2high{i}.coeffs, t, resultsU8_2high{i}.W, uField, vField, wField, dt, p,U, 1, Ghigh(i));
-ali(i) = sum(vecnorm(Fdrag(:,:,i)));
+[COT(i),~, ~, Fdrag(:,:,i)] = COT14(resultsU8new_2{i}.coeffs, t, resultsU8new_2{i}.W, uField, vField, wField, dt, p,U, 1, G(i));
+ali(i) = sum(vecnorm(Fdrag(:,:,i)))/700;
 end
 
 %%
@@ -278,7 +285,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:) = X14(t, results7h30knew1{1}.coeffs,results7h30knew1{1}.W);
+    X(:,:) = X14(t, resultsU4_7{12}.coeffs,resultsU4_7{12}.W);
     % Extract X, Y, Z coordinates and normalize by L
     X_k = X(1, :, k) / L;
     Y_k = X(2, :, k) / L;
@@ -312,7 +319,7 @@ axis equal
 view(3); % Default 3D view
 
 % Add legend for trajectories only
-legend('show', 'Location', 'best');
+%legend('show', 'Location', 'best');
 
 hold off; % Release the hold on the current figure
 

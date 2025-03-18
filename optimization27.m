@@ -1,6 +1,6 @@
-function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, trialpoints, mode, tau_p, wlow,whigh)
+function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, trialpoints, mode, tau_p, wlow,whigh, lim)
     % mode = mode;
-    lim=0.4;
+    
 
     % Combine coefficients and W into a single vector
     initial_coeffs = zeros(2*mode+mode/2+3, 1);
