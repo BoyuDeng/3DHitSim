@@ -1,7 +1,7 @@
 %close all;clear,clc;
 
 % Define the file path
-file_path = '/Users/boyi/Simulations/hit/output_fields2U=8';
+file_path = '/Users/boyi/Simulations/hit/output_fields2_U=4,L=0.17';
 
 
 % Define the range of file numbers
@@ -40,7 +40,7 @@ numb1=numb+1;
 
 dt = 1e-3;
 t = 0:dt:numb*dt;
-W = 4; 
+W = 8; 
 p =1;
 tau_p=1e-2;
 Forcing = 1;
@@ -64,43 +64,107 @@ end
 % 
 % [uField, vField, wField] = ChangeU(uField,vField,wField, Ufactor);
 
-U = calculateRMS(uField(1:200),vField(1:200),wField(1:200));
+U = calculateRMS(uField(1:100),vField(1:100),wField(1:100));
 
 
 %%
+gridSize = [64, 64, 64]; % Grid size
 
+uField = cell(numb1,1); % Create a cell array with 101 elements
+for i = 1:numb1
+    uField{i} = {zeros(64, 64, 64) * 4}; % Assign a 64x64x64 matrix filled with 4 to each cell
+end
+wField = cell(numb1,1); % Create a cell array with 101 elements
+for i = 1:numb1
+    wField{i} = {zeros(64, 64, 64) * 4}; % Assign a 64x64x64 matrix filled with 4 to each cell
+end
+vField = cell(numb1,1); % Create a cell array with 101 elements
+for i = 1:numb1
+    vField{i} = {ones(64, 64, 64) * 8}; % Assign a 64x64x64 matrix filled with 4 to each cell
+end
+uField = cell(numb1,1);
+% Generate the sine wave evolving over time
+for i = 1:numb1
+    uField{i} = {8 *cos(4 * pi  * i/numb1) * ones(gridSize)}; % Assign the sine wave value
+end
+
+
+%%
 
 %parpool; % Start parallel pool
 
 
 N = 14; % Number of parallel searches
-resultsU4_8 = cell(1, N);
-fvalsU4_8 = cell(1, N);
+% resultsU8ul5 = cell(1, N);
+% fvalsU8ul5 = cell(1, N);
+% 
+% resultsTest1 = cell(1, N);
+% fvalsTest1 = cell(1, N);
+% 
+% 
+% resultsU8ul1high = cell(1, N);
+% fvalsU8ul1high = cell(1, N);
 
-resultsU4_9 = cell(1, N);
-fvalsU4_9 = cell(1, N);
 
-
-% resultsU8_3high = cell(1, N);
-% fvalsU8_3high = cell(1, N);
-
-
-G = [0.01;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
-Glow = G(4:2:6);
+G = [0.001;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
+Gold = [0.01;0.05;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
 Ghigh = [2,2.5,3,4,5,6,7,8,9,10,11,15,20,25];
 lowlim = [7,3,2,3,3,3,3,3,3,3,3,3,3,3];
 highlimU = [8,4,8,10,10,10,10,10,10,10,10,10,10,10];
 highlim = [40,50,60,70,80,90,100,200,300,400,500,500,500,500];
 
+
+W = [0,0,0,0,4,4,4,8,8,8,8,18,18,18];
+
+% parfor i = 1:N
+%     [resultsTest1{i}.coeffs, resultsTest1{i}.W, resultsTest1{i}.energy, fvalsTest1{i}] = ...
+%         optimization27(t, 8, uField, vField, wField, dt, p, U, Forcing, 1000,20, G(i),0, 20,1,0.5);
+% end 
+
+
+%1 15000, 20 , 0,20,1,0.5
+%2 ~,30,~,~,~
+%3 ~,40,~,~
+% parfor i = 1:N
+%     [resultsU8_7{i}.coeffs, resultsU8_7{i}.W, resultsU8_7{i}.energy, fvalsU8_4{i}] = ...
+%         optimization27(t, 8, uField, vField, wField, dt, p, U, Forcing, 10000,15, G(i),0, 20,1,0.5);
+% end 
+% parfor i = 1:N
+%     [resultsU8_8{i}.coeffs, resultsU8_8{i}.W, resultsU8_8{i}.energy, fvalsU8_8{i}] = ...
+%         optimization27(t, 8, uField, vField, wField, dt, p, U, Forcing, 5000,10, G(i),0, 20,1,0.5);
+% end 
+% parfor i = 1:N
+%     [resultsU8_9{i}.coeffs, resultsU8_9{i}.W, resultsU8_9{i}.energy, fvalsU8_9{i}] = ...
+%         optimization27(t, 8, uField, vField, wField, dt, p, U, Forcing, 5000,25, G(i),0, 20,1,0.5);
+% end 
+
+
+
 parfor i = 1:N
-    [resultsU4_8{i}.coeffs, resultsU4_8{i}.W, resultsU4_8{i}.energy, fvalsU4_8{i}] = ...
-        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 30000, 20, G(i),lowlim(i), highlimU(i),1);
+    [results1U4_5{i}.coeffs, results1U4_5{i}.W, results1U4_5{i}.energy, fvals1U4_5{i}] = ...
+        optimization27(t, U, uField, vField, wField, dt, p, U, Forcing, 1000,5, G(i),0, 20,1,1,0);
 end 
 
 parfor i = 1:N
-    [resultsU4_9{i}.coeffs, resultsU4_9{i}.W, resultsU4_9{i}.energy, fvalsU4_9{i}] = ...
-        optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, 60000, 20, G(i),lowlim(i), highlimU(i),1);
-end 
+    [results1U4_10{i}.coeffs, results1U4_10{i}.W, results1U4_10{i}.energy, fvals1U4_10{i}] = ...
+        optimization27(t, results1U4_5{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000,10, G(i),0, 20,1,1,results1U4_5{i}.coeffs);
+end
+
+parfor i = 1:N
+    [results1U4_15{i}.coeffs, results1U4_15{i}.W, results1U4_15{i}.energy, fvals1U4_15{i}] = ...
+        optimization27(t, results1U4_10{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000,15, G(i),0, 20,1,1,results1U4_10{i}.coeffs);
+end
+
+parfor i = 1:N
+    [results1U4_20{i}.coeffs, results1U4_20{i}.W, results1U4_20{i}.energy, fvals1U4_20{i}] = ...
+        optimization27(t, results1U4_15{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000,20, G(i),0, 20,1,1,results1U4_15{i}.coeffs);
+end
+
+parfor i = 1:N
+    [results1U4_25{i}.coeffs, results1U4_25{i}.W, results1U4_25{i}.energy, fvals1U4_25{i}] = ...
+        optimization27(t, results1U4_20{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000,25, G(i),0, 20,1,1,results1U4_20{i}.coeffs);
+end
+
 
 
 %%
@@ -111,39 +175,37 @@ hold on; % Hold the plot to overlay multiple points
 
 for i = 1:length(G)
     % Plot each fvals dataset with a different color and marker
-    plot(G(i), ali2(i), markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
-    plot(G(i), ali3(i), markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
-    % plot(G(i), cotnew1(i), markers{3}, 'MarkerSize', 6, 'MarkerFaceColor', colors{3});
-    % plot(G(i), cotnew2(i), markers{4}, 'MarkerSize', 6, 'MarkerFaceColor', colors{4});
-    plot(Ghigh(i), alihigh(i), markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
+    plot(G(i), fvalsU4_m10{i}, markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
+    plot(G(i), fvalsU4_m15{i}, markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
+    plot(G(i), fvalsU4_m20{i}, markers{3}, 'MarkerSize', 6, 'MarkerFaceColor', colors{3});
+    plot(G(i), fvalsU4_m25{i}, markers{4}, 'MarkerSize', 6, 'MarkerFaceColor', colors{4});
+    plot(G(i), fvalsU4_m30{i}, markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
 end
 
 set(gca, 'XScale', 'log'); % Set X-axis to log scale
-
+set(gca, 'YScale', 'log'); % Set X-axis to log scale
 % Adding labels and title
 xlabel('G');
-ylabel('u w diff');
-title('Plot of u w diff vs G');
+ylabel('COT');
+title('Plot of COT vs G t = 16.5 (t_d U/L)');
 
 grid on;
 
 % Adding legend
-legend({'run 1', 'run 2','run with high G'}, 'Location', 'best');
+legend({'mode5', 'mode10', 'mode15','mode20','mode25'}, 'Location', 'best');
 
 hold off; % Release the plot hold
 
 
 
 
-
-
 %%
-COT = zeros(1, length(G));
+alitotal = zeros(1, length(G));
 Fdrag = zeros(3, length(t), length(G));
 ali = zeros(1, length(G));
 for i = 1:14
-[COT(i),~, ~, Fdrag(:,:,i)] = COT14(resultsU8new_2{i}.coeffs, t, resultsU8new_2{i}.W, uField, vField, wField, dt, p,U, 1, G(i));
-ali(i) = sum(vecnorm(Fdrag(:,:,i)))/700;
+[COThigh1(i),~, ~, alihigh1(i)] = COT14(results1U4_25{i}.coeffs, t, results1U4_25{i}.W, uField, vField, wField, dt, p,U, 1, G(i));
+%ali(i) = sum(vecnorm(Fdrag(:,:,i)))/700;
 end
 
 %%
@@ -255,6 +317,10 @@ hold off; % Release the hold on the current figure
 
 
 %%
+QF = QFode45(uField, vField, wField, t, dt, 64, resultsU8ul5{1}.coeffs(end-1), resultsU8ul5{1}.coeffs(end));
+
+
+%%
 
 
 num_time_steps = length(t);  % Number of time steps
@@ -272,7 +338,7 @@ W_ = zeros(1, num_time_steps);
 figure;
 hold on; % Hold on to plot multiple trajectories in the same figure
 grid on; % Enable grid
-title('Trajectory, G=0.4');
+title('Trajectory');
 xlabel('X/L');
 ylabel('Y/L');
 zlabel('Z/L');
@@ -285,7 +351,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:) = X14(t, resultsU4_7{12}.coeffs,resultsU4_7{12}.W);
+    X(:,:) = X14(t, results1U4_25{14}.coeffs,results1U4_25{14}.W);
     % Extract X, Y, Z coordinates and normalize by L
     X_k = X(1, :, k) / L;
     Y_k = X(2, :, k) / L;
@@ -353,3 +419,9 @@ save('feb25data.mat', 'resultsU8_1','resultsU8_2','resultsU8high','results7hlimh
 save('feb26data.mat', 'resultsU8_2high','resultsU8new_2');
 
 save('feb27data.mat', 'resultsU8_3high','resultsU8new_3');
+
+save('Apr8data.mat', 'resultsU8_m20','resultsU8_m25','resultsU8_m30');
+
+save('Apr14data.mat', 'results1U8_5', 'results1U8_10','results1U8_15','results1U8_20','results1U8_25')
+
+save('Apr15data.mat', 'results1U4_5', 'results1U4_10', 'results1U4_15', 'results1U4_20', 'results1U4_25');

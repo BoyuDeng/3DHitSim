@@ -1,24 +1,15 @@
-function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27(t, W, uField, vField, wField, dt, p, U, Forcing, trialpoints, mode, tau_p, wlow, whigh, lim, ip, prev_coeffs)
-
+function [optimized_coeffs, optimized_W, totalEnergy, fval] = optimization27lim(t, W, uField, vField, wField, dt, p, U, Forcing, trialpoints, mode, tau_p, wlow,whigh, lim)
     % mode = mode;
     
 
-% Default zero init
-initial_coeffs = zeros(3*mode+3, 1);
-initial_coeffs(end) = W;
-
-% Auto-fill from prev_coeffs if provided
-if exist('prev_coeffs', 'var') && ~isempty(prev_coeffs)
-    n_prev = min(length(prev_coeffs), length(initial_coeffs)-1);
-    initial_coeffs(1:end-2) = prev_coeffs(1:n_prev-2);
-    initial_coeffs(end-2:end-1) = prev_coeffs(end-1:end);
-end
-
+    % Combine coefficients and W into a single vector
+    initial_coeffs = zeros(2*mode+mode/2+3, 1);
+    initial_coeffs(end) = W;
 
     
     % Define bounds
-    lb = [-lim * ones(mode, 1); -lim * ones(mode, 1); -lim * ones(mode, 1); -ip*ones(2,1) ;wlow];
-    ub = [lim * ones(mode, 1); lim * ones(mode, 1); lim * ones(mode, 1); ip*ones(2,1) ;whigh];
+    lb = [-lim * ones(mode, 1); -lim * ones(mode/2, 1); -lim * ones(mode + 2, 1); wlow];
+    ub = [lim * ones(mode, 1); lim * ones(mode/2, 1); lim * ones(mode + 2, 1); whigh];
 
 
 

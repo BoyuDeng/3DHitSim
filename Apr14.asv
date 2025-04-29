@@ -1,0 +1,29 @@
+colors = {'b', 'r', 'g', 'm', 'c', 'k'}; % Extend this if needed
+markers = {'o', 's', 'd', '^', 'v', 'p'}; % Extend this if needed
+
+hold on; % Hold the plot to overlay multiple points
+
+for i = 1:length(G)
+    % Plot each fvals dataset with a different color and marker
+    plot(G(i), fvals1U8_5{i}, markers{1}, 'MarkerSize', 6, 'MarkerFaceColor', colors{1});
+    plot(G(i), fvals1U8_10{i}, markers{2}, 'MarkerSize', 6, 'MarkerFaceColor', colors{2});
+    plot(G(i), fvals1U8_15{i}, markers{3}, 'MarkerSize', 6, 'MarkerFaceColor', colors{3});
+    plot(G(i), fvals1U8_20{i}, markers{4}, 'MarkerSize', 6, 'MarkerFaceColor', colors{4});
+    plot(G(i), fvals1U8_25{i}, markers{5}, 'MarkerSize', 6, 'MarkerFaceColor', colors{5});
+end
+
+set(gca, 'XScale', 'log'); % Set X-axis to log scale
+set(gca, 'YScale', 'log'); % Set X-axis to log scale
+% Adding labels and title
+xlabel('G');
+ylabel('COT');
+title('Plot of COT vs G t = 16.5 (t_d U/L)');
+
+grid on;
+
+% Adding legend
+legend({'mode5', 'mode10', 'mode15','mode20','mode25'}, 'Location', 'best');
+
+hold off; % Release the plot hold
+
+%%

@@ -1,4 +1,4 @@
-function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField, dt, p,U, B, tau_p)
+function [alitotal,Fdrag, G, COT] = COT14lim(coeffs, t, W, uField, vField, wField, dt, p,U, B, tau_p)
     try
 
 
@@ -6,9 +6,9 @@ function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField,
         G = tau_p;
         %St = tau_p*U/0.2;
         St = 0;
-        Du = 0;   %Du14(t,coeffs);
+        Du = Du14(t,coeffs);
         % Calculate X
-        X = X14unlim(t, coeffs, W);
+        X = X14(t, coeffs, W);
         
         % Check dimensions of X
         % disp('Dimensions of X:');
@@ -30,7 +30,7 @@ function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField,
         % disp(size(Velocity_fields));
         % 
         % Calculate the gap and velocities
-        Vs = V14unlim(t, coeffs, W);
+        Vs = V14(t, coeffs, W);
         
         % Check dimensions of Gap and Vs
         % disp(size(Vs));
@@ -42,7 +42,7 @@ function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField,
         Fdrag(3,:) = Fdrag(3,:) + B;
         alitotal = mean(abs(vecnorm(ali)));
         
-        COT = ((G*U)/(X(2,end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
+        COT = ((G*U)/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
         COT = COT/1.611;
 
         

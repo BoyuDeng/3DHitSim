@@ -40,9 +40,9 @@ function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField,
         Fdrag =(1/G)* (St*Du-(Velocity_fields./U - Vs./U) .* vecnorm(Velocity_fields./U - Vs./U).^(p-1));
         ali = (Velocity_fields./U - Vs./U);
         Fdrag(3,:) = Fdrag(3,:) + B;
-        alitotal = mean(abs(vecnorm(ali)));
+        alitotal = mean(abs(vecnorm(ali)))/U;
         
-        COT = ((G*U)/(X(2,end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
+        COT = ((G*U)/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
         COT = COT/1.611;
 
         
