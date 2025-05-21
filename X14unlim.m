@@ -43,7 +43,7 @@ function X = X14unlim(t, coeffs, W)
     for i = 1:n
         X(1, :) = X(1, :) + a(i) * sin(i * pi * t / (2 * t(end)));
         X(2, :) = X(2, :) + b(i) * sin(i * pi * t / (2 * t(end)));
-        X(3, :) = X(3, :) + c(i) * sin(i * pi * t / (2 * t(end)));
+        X(3, :) = X(3, :) + c(i) * sin(i * pi * t / ( t(end)));
     end
 
     % Add the initial positions and linear term for x2

@@ -17,7 +17,7 @@ function V = V14unlim(t, coeffs, W)
     for i = 1:n
         V(1, :) = V(1, :) + a(i) * (i * pi / (2*t(end))) * cos(i * pi * t / (2*t(end)));
         V(2, :) = V(2, :) + b(i) * (i * pi / (2*t(end))) * cos(i * pi * t / (2*t(end)));
-        V(3, :) = V(3, :) + c(i) * (i * pi / (2*t(end))) * cos(i * pi * t / (2*t(end)));
+        V(3, :) = V(3, :) + c(i) * (i * pi / (t(end))) * cos(i * pi * t / (t(end)));
     end
     
     % Add the constant term for the velocity component x2

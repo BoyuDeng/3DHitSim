@@ -57,8 +57,9 @@ hold off; % Release the plot hold
 
 %%
 for i = 1:length(G)
-    X = X14unlim(t, results1U8_20{i}.coeffs, results1U8_20{i}.W);
+    X = X14unlim(t, results2U4_25{i}.coeffs, results2U_425{i}.W);
     Zdiffh(i) = X(3, end)-X(3, 1);
+    Ydiff(i) = X(2, end)-X(2, 1);
 end
 
 

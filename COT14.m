@@ -42,7 +42,7 @@ function [COT ,Fdrag, G, alitotal] = COT14(coeffs, t, W, uField, vField, wField,
         Fdrag(3,:) = Fdrag(3,:) + B;
         alitotal = mean(abs(vecnorm(ali)));
         
-        COT = ((G*U)/(X(2,end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
+        COT = ((G*U)/(W*t(end)))*sum((vecnorm(Fdrag).^2).^(3/4))*(dt);
         COT = COT/1.611;
 
         

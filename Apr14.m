@@ -163,25 +163,25 @@ figure;
 hold on;
 
 % Plot normalized E_min for c = 0.6 (no markers)
-plot(G, E_min_06 / 1.611, '-', 'LineWidth', 2);
+%plot(G, E_min_06 / 1.611, '-', 'LineWidth', 2);
 
 % Plot normalized E_min for c = 0.3 (no markers)
 plot(G, E_min_03 / 1.611, '-', 'LineWidth', 2);
 
 % Preallocate arrays
-fvals1U4 = zeros(size(G));
+fvals2Z4 = zeros(size(G));
 fvals2U4 = zeros(size(G));
 fvals1U8 = zeros(size(G));
 
 % Convert cell to array
 for i = 1:length(G)
-    fvals1U4(i) = fvals1U4_25{i};
+    fvals2Z4(i) = fvals2Z4_10{i};
     fvals2U4(i) = fvals2U4_25{i};
     fvals1U8(i) = fvals1U8_25{i};
 end
 
 % Plot all three OptE datasets with markers
-plot(G, fvals1U4, '--s', 'LineWidth', 2);
+plot(G, fvals2Z4, '--s', 'LineWidth', 2);
 plot(G, fvals2U4, '--d', 'LineWidth', 2);
 plot(G, fvals1U8, '--^', 'LineWidth', 2);
 
@@ -193,7 +193,7 @@ title('Energy vs G (B = 1)');
 grid on;
 
 % Legend with larger font
-legend('E_{TW,c = 0.6}', 'E_{TW}', 'OptE U=4 flow1', 'OptE U=4 flow2', 'OptE U=8', ...
+legend( 'E_{TW} 2D flow', 'OptE U=4 no Potential Change', 'OptE U=4', 'OptE U=8', ...
        'Location', 'best', 'FontSize', 14);
 
 
