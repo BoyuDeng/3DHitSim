@@ -28,6 +28,7 @@ end
 % Given values
 %G = [ 0.1; 0.2; 0.4; 0.5; 0.6; 0.7; 0.9; 1.0; 1.2; 1.7; 2; 2.5];
 G = [0.001;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
+
 B = 1;
 c = 0.5;
 
@@ -39,15 +40,15 @@ u_crit = zeros(size(G));
 % Define the expression for the critical point (u)
 for i = 1:length(G)
 % Define the function f(u)
-u_crit(i) = (-1 + sqrt(1 - 4*(4*c*G(i) - 2*c^2 - 2*G(i)^2 - 2)))/2;
-E_min_06(i) = (G(i)/u_crit(i)) * (1 + (1 + u_crit(i)^2 - 2*u_crit(i) + c^2)/G(i)^2 - (2*c/G(i)))^(3/4);
-
-u_crit(i) = (-1 + sqrt(1 - 4*(4*c*Ghigh(i) - 2*c^2 - 2*Ghigh(i)^2 - 2)))/2;
-E_min_high(i) = (Ghigh(i)/u_crit(i)) * (1 + (1 + u_crit(i)^2 - 2*u_crit(i) + c^2)/Ghigh(i)^2 - (2*c/Ghigh(i)))^(3/4);
+% u_crit(i) = (-1 + sqrt(1 - 4*(4*c*G(i) - 2*c^2 - 2*G(i)^2 - 2)))/2;
+% E_min_06(i) = (G(i)/u_crit(i)) * (1 + (1 + u_crit(i)^2 - 2*u_crit(i) + c^2)/G(i)^2 - (2*c/G(i)))^(3/4);
+% 
+% u_crit(i) = (-1 + sqrt(1 - 4*(4*c*Ghigh(i) - 2*c^2 - 2*Ghigh(i)^2 - 2)))/2;
+% E_min_high(i) = (Ghigh(i)/u_crit(i)) * (1 + (1 + u_crit(i)^2 - 2*u_crit(i) + c^2)/Ghigh(i)^2 - (2*c/Ghigh(i)))^(3/4);
 
 % 
-% E_min_09(i) = EF_min_07(G(i));
-% E_min_high(i) = EF_min_07(Ghigh(i));
+E_min_09(i) = EF_min_general(G(i));
+E_min_high(i) = EF_min_general(Ghigh(i));
 end
 
 % Plot
@@ -58,7 +59,7 @@ hold on;
 %plot(G, E_min_06 / 1.611, '-', 'LineWidth', 2);
 
 % Plot normalized E_min for c = 0.3 (no markers)
-plot(G, E_min_06 / 1.611, '-', 'LineWidth', 2);
+plot(G, E_min_09 / 1.611, '-', 'LineWidth', 2);
 plot(Ghigh, E_min_high / 1.611, '-', 'LineWidth', 2);
 
 % Preallocate arrays
@@ -68,9 +69,9 @@ fvalshZ4 = zeros(size(G));
 
 % Convert cell to array
 for i = 1:length(G)
-    fvals2Z4(i) = fvals2Z4_10{i};
+    fvals2Z4(i) = fvals3Z4_10{i};
     %fvals2U4(i) = fvals2U4_25{i};
-    fvalshZ4(i) = fvalshighZ4_10{i};
+    fvalshZ4(i) = fvals3hZ4_10{i};
 end
 
 % Plot all three OptE datasets with markers

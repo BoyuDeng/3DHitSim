@@ -1,0 +1,142 @@
+dot_avgstotal=[];
+updraft_avgstotal=[];
+crosswind_avgstotal=[];
+%%
+
+numFields = length(results); 
+numFields=10;% e.g., 5
+numSamples = length(results{1});    % e.g., 13 or so
+
+dot_avgs = zeros(numFields, numSamples);  % Store dot_avg for each sample in each field
+updraft_avgs = zeros(numFields, numSamples);
+Vrms = zeros(numFields, numSamples);
+ crosswind_avgs = zeros(numFields, numSamples);
+
+
+
+for n = 1:numFields
+
+    fn = mod(n, 10);
+    if fn == 0
+       fn = 10;
+    end
+
+
+
+    % Define the file path dynamically
+    file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', fn);
+
+    % Read all field files
+    numFiles = end_num - start_num + 1;
+    variables_list = cell(numFiles, 1);
+    
+    for i = start_num:end_num
+        filename = fullfile(file_path, sprintf('field_%05d', i));
+        [~, ~, ~, ~, variables] = read_field_file(filename);
+        variables_list{i - start_num + 1} = variables;
+    end
+    
+    % Extract u, v, w fields
+    uField = cell(numFiles, 1);
+    vField = cell(numFiles, 1);
+    wField = cell(numFiles, 1);
+    
+    for i = 1:numFiles
+        data = variables_list{i};
+        uField{i} = data(1);
+        vField{i} = data(2);
+        wField{i} = data(3);
+    end
+    
+    % Calculate RMS velocity U
+    U = calculateRMS(uField(1:100), vField(1:100), wField(1:100));
+    for i = 1:numSamples
+        tempresults = results{n}{i};
+        coeffs = -1 + 2 * rand(1, 5);
+        coeffs = [0 0 0 0 0];
+
+        W = 5;
+
+        X = X14unlim(t, coeffs, W);
+
+        Velocity_fields = get_vel(uField, vField, wField, 64, X) ./ U;
+
+        Vs = V14unlim(t, coeffs, W) ./ U;
+        norm = sqrt(sum(Vs.^2,1));
+        Vunit = Vs./ norm;
+
+
+        dot_all = sum(Velocity_fields .* Vunit,1);  % 1×T
+        dot_avg = mean(dot_all);
+        
+        Velsq = Velocity_fields.^2;
+        Velmean = mean(Velsq, 2);
+        Vrms(n,i) = sqrt(sum(Velmean)/3);
+        
+        
+        updraft_all = Velocity_fields(3,:);
+        crosswind_all = abs(Velocity_fields(1,:));
+        updraft_avg=mean(updraft_all);
+        crosswind_avg = mean(crosswind_all);
+        dot_avgs(n, i) = dot_avg;
+        updraft_avgs(n,i) = updraft_avg;
+        crosswind_avgs(n,i) = crosswind_avg;
+    end
+end
+
+dot_avgstotal = [dot_avgstotal; dot_avgs];
+updraft_avgstotal = [updraft_avgstotal; updraft_avgs];
+crosswind_avgstotal = [crosswind_avgstotal; crosswind_avgs];
+
+
+%%
+% Means
+mean_dot_per_field = mean(dot_avgstotal, 1);
+mean_updraft = mean(updraft_avgstotal, 1);
+mean_crosswind = mean(crosswind_avgstotal, 1);
+
+% Standard Errors
+std_dot_per_field = std(dot_avgstotal, 0, 1) / sqrt(size(dot_avgstotal, 1));
+std_updraft = std(updraft_avgstotal, 0, 1) / sqrt(size(updraft_avgstotal, 1));
+std_crosswind = std(crosswind_avgstotal, 0, 1) / sqrt(size(crosswind_avgstotal, 1));
+
+% Plot 1: <u · w> (Dot Product)
+figure;
+errorbar(Gall, mean_dot_per_field, std_dot_per_field, 'o-', 'LineWidth', 1.5);
+set(gca, 'XScale', 'log');
+xlabel('G');
+ylabel('<w · u_{unit}>');
+title('Dot Product of Flow and Trajectory');
+grid on;
+print(gcf, 'dot_product_plot.pdf', '-dpdf', '-bestfit');
+% Plot 2: Updraft
+figure;
+errorbar(Gall, mean_updraft, std_updraft, 's-', 'LineWidth', 1.5);
+set(gca, 'XScale', 'log');
+xlabel('G');
+ylabel('<Updraft Component>');
+title('Mean Updraft');
+grid on;
+
+% Plot 3: Crosswind
+figure;
+errorbar(Gall, mean_crosswind, std_crosswind, 'd-', 'LineWidth', 1.5);
+set(gca, 'XScale', 'log');
+xlabel('G');
+ylabel('<Crosswind Component>');
+title('Mean Crosswind');
+grid on;
+
+%%
+% Suppose your cell array is named 'C'
+total_sum = 0;
+total_elements = 0;
+
+for i = 1:350
+    A = wField{i}; 
+    A=A{1};% Extract the 63x63x63 array
+    total_sum = total_sum + sum(A(:));  % Sum all elements
+    total_elements = total_elements + numel(A);  % Count total elements
+end
+
+meancell = total_sum / total_elements;

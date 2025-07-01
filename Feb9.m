@@ -1,12 +1,12 @@
 %close all;clear,clc;
 
 % Define the file path
-file_path = '/Users/boyi/Simulations/hit/output_fields2_U=4,L=0.17';
+file_path = '/Users/boyi/Simulations/hit/output_fields3U=8';
 
 
 % Define the range of file numbers
 start_num = 350;
-end_num = 1050;
+end_num = 700;
 
 % Initialize cell arrays to store the results
 dims_list = cell(end_num - start_num + 1, 1);
@@ -35,7 +35,7 @@ end
 
 
 %%
-numb=700;
+numb=350;
 numb1=numb+1;
 
 dt = 1e-3;
@@ -94,7 +94,7 @@ end
 %parpool; % Start parallel pool
 
 
-N = 14; % Number of parallel searches
+N = 13; % Number of parallel searches
 % resultsU8ul5 = cell(1, N);
 % fvalsU8ul5 = cell(1, N);
 % 
@@ -106,9 +106,10 @@ N = 14; % Number of parallel searches
 % fvalsU8ul1high = cell(1, N);
 
 
-G = [0.001;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
+G = [0.001;0.01;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2];
 Gold = [0.01;0.05;0.1;0.2;0.4;0.5;0.6;0.7;0.9;1.0;1.2;1.7;2;2.5];
-Ghigh = [2,2.5,3,4,5,6,7,8,9,10,11,15,20,25];
+
+Ghigh = [2.5,3,4,5,6,7,8,9,10,11,15,20,25];
 lowlim = [7,3,2,3,3,3,3,3,3,3,3,3,3,3];
 highlimU = [8,4,8,10,10,10,10,10,10,10,10,10,10,10];
 highlim = [40,50,60,70,80,90,100,200,300,400,500,500,500,500];
@@ -351,7 +352,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:) = X14(t, results1U4_25{14}.coeffs,results1U4_25{14}.W);
+    X(:,:) = X14unlim(t, results3Z4_5{1}.coeffs,results3Z4_5{1}.W);
     % Extract X, Y, Z coordinates and normalize by L
     X_k = X(1, :, k) / L;
     Y_k = X(2, :, k) / L;
@@ -425,3 +426,4 @@ save('Apr8data.mat', 'resultsU8_m20','resultsU8_m25','resultsU8_m30');
 save('Apr14data.mat', 'results1U8_5', 'results1U8_10','results1U8_15','results1U8_20','results1U8_25')
 
 save('Apr15data.mat', 'results1U4_5', 'results1U4_10', 'results1U4_15', 'results1U4_20', 'results1U4_25');
+save('dataall.mat', 'resultsallU8_1', 'resultsallU8_2', 'resultsallU8_3', 'resultsallU8_4', 'resultsallU4_1','resultsallU4_2','resultsallU4_3');

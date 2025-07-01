@@ -50,9 +50,9 @@ function RMS = calculateRMS(uField, vField, wField)
     meanVPrimeSquared = mean(vPrimeSquared, 'all');
     meanWPrimeSquared = mean(wPrimeSquared, 'all');
 
-    Urms = sqrt(meanUPrimeSquared);
-    Vrms = sqrt(meanVPrimeSquared);
-    Wrms = sqrt(meanWPrimeSquared);
+    Urms = meanUPrimeSquared;
+    Vrms = meanVPrimeSquared;
+    Wrms = meanWPrimeSquared;
 
-    RMS = sqrt((Urms^2+Vrms^2+Wrms^2)/3);
+    RMS = sqrt((Urms+Vrms+Wrms)/3);
 end
