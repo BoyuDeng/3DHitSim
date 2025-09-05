@@ -205,7 +205,7 @@ alitotal = zeros(1, length(G));
 Fdrag = zeros(3, length(t), length(G));
 ali = zeros(1, length(G));
 for i = 1:14
-[COThigh1(i),~, ~, alihigh1(i)] = COT14(results1U4_25{i}.coeffs, t, results1U4_25{i}.W, uField, vField, wField, dt, p,U, 1, G(i));
+[COT,~, ~, ~] = COT14(resultsall{5}{1}.coeffs, t, resultsall{5}{1}.W, uField, vField, wField, dt, p,U, 1, Ghigh(2));
 %ali(i) = sum(vecnorm(Fdrag(:,:,i)))/700;
 end
 
@@ -344,7 +344,7 @@ xlabel('X/L');
 ylabel('Y/L');
 zlabel('Z/L');
 nub=1;
-L = 0.17; % Define L for normalization
+L = 0.2; % Define L for normalization
 
 % Generate colors for the trajectories
 colors = lines(5); % Generate 5 distinct colors
@@ -352,7 +352,7 @@ colors = lines(5); % Generate 5 distinct colors
 % Loop through the first 5 trajectories
 for k = 1:1
     % Compute the trajectory for each set
-    X(:,:) = X14unlim(t, results3Z4_5{1}.coeffs,results3Z4_5{1}.W);
+    X(:,:) = X14unlim(t, resultsallU8_1{5}{20}.coeffs,resultsallU8_1{5}{20}.W);
     % Extract X, Y, Z coordinates and normalize by L
     X_k = X(1, :, k) / L;
     Y_k = X(2, :, k) / L;
@@ -389,14 +389,6 @@ view(3); % Default 3D view
 %legend('show', 'Location', 'best');
 
 hold off; % Release the hold on the current figure
-
-
-% 
-% save('resultfeb8first650.mat', 'optimized_coeffs');
-% save('Wfeb8first650', 'optW')
-
-
-
 %%
 
 % Define the filename
@@ -414,7 +406,7 @@ save('feb19data.mat', 'results7h30knew1', 'results7h30knew2', 'results7hhigh', .
 
 
 
-save('feb25data.mat', 'resultsU8_1','resultsU8_2','resultsU8high','results7hlimhigh');
+save('aug25data.mat', 'resultsallU8_1','resultsallU8_2');
 
 
 save('feb26data.mat', 'resultsU8_2high','resultsU8new_2');

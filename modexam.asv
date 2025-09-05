@@ -1,0 +1,43 @@
+% --- user parameters -----------------------------------------------------
+modes      = [10 20 30 40];                       % retained-mode counts
+resultSets = {resultsU8_10high, resultsU8_20h, ...
+              resultsU8_30, resultsU8_40};        % 4 optimisation levels
+nFields    = 5;                                   % outer cells to average
+realIdx    =12;                                  % realisation index
+components = {'u','v','w'};                       % which velocity fields
+% -------------------------------------------------------------------------
+
+nComp = numel(components);
+figure;
+
+for c = 1:nComp
+    subplot(1,3,c); hold on
+    for k = 1:numel(modes)
+        m   = modes(k);
+        Ec  = zeros(nFields, m);      % energy per field, per mode index
+
+        for f = 1:nFields
+            coeffs = resultSets{k}{f}{realIdx}.coeffs;
+            offset = (c-1)*m;         % 0 for u, m for v, 2m for w
+            Ec(f,:) = coeffs(1+offset : m+offset).^2;
+        end
+
+        Ec_mean = mean(Ec, 1);        % average over the 5 fields
+        h(k) = plot(1:m, Ec_mean, '-o', ...
+                    'DisplayName', sprintf('%d modes', m), ...
+                    'LineWidth', 1.5);
+    end
+
+    ax = gca;
+    set(ax, 'YScale', 'log', 'Box', 'on', 'GridLineStyle', ':');
+    xlabel('Mode number');
+    ylabel(sprintf('%s-energy', components{c}));
+    title(sprintf('%s-direction Spectrum (mean of 5 fields, G=2)', ...
+                  components{c}));
+
+    if c == 1
+        legend('Location', 'southwest');
+    end
+    grid on
+end
+

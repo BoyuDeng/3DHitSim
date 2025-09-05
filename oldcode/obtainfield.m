@@ -57,7 +57,7 @@ step = 2; % Example step size for downsampling
 x = x(1:step:64, 1:step:64, 1:step:64);
 y = y(1:step:64, 1:step:64, 1:step:64);
 z = z(1:step:64, 1:step:64, 1:step:64);
-nu=1000;
+nu=100;
 % Assume uField, vField, and wField are cell arrays of matrices
 u = uField{nu};
 u = u{1};
@@ -75,7 +75,7 @@ figure;
 quiver(x(:,:,1), y(:,:,1), u(:,:,1), v(:,:,1));
 xlabel('X');
 ylabel('Y');
-title('2D Vector Field');
+title('A slice of the 3-D HIT');
 grid on;
 axis tight; % Set the view to 3D
 
@@ -83,7 +83,7 @@ axis tight; % Set the view to 3D
 
 
 nu1 = 1;
-nu600 = 600;
+nu600 = 100;
 step = 1; % Example step size for downsampling
 
 % Extract and downsample the data for nu = 1
@@ -109,9 +109,9 @@ w600 = w600{1};
 w600 = w600(1:step:10, 1:step:10, 1:step:10);
 
 % Calculate the difference field
-u_diff = u600 - u1;
-v_diff = v600 - v1;
-w_diff = w600 - w1;
+u_diff = u600;
+v_diff = v600;
+w_diff = w600;
 
 % Create the grid that matches the dimensions of your velocity matrices
 [x, y, z] = ndgrid(1:10, 1:10, 1:10);
@@ -122,7 +122,7 @@ quiver3(x, y, z, u_diff, v_diff, w_diff);
 xlabel('X');
 ylabel('Y');
 zlabel('Z');
-title('Difference of 3D Vector Fields (nu = 600 - nu = 1)');
+title('A portion of the 3-D HIT');
 grid on;
 axis
 

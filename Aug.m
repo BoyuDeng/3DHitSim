@@ -1,13 +1,13 @@
 numFields = 5;     % You have fields1 to fields5
-start_num = 350;
-end_num = 1050;
+start_num = 5500;
+end_num = 9000;
 numb = end_num-start_num;
 dt = 1e-3;
 t = 0:dt:numb*dt;
 p = 1;
 tau_p = 1e-2;
 Forcing = 1;
-N = 13; % Number of parallel searches
+N = 2; % Number of parallel searches
 % resultsU8ul5 = cell(1, N);
 % fvalsU8ul5 = cell(1, N);
 % 
@@ -22,9 +22,9 @@ N = 13; % Number of parallel searches
 %%
 tic
 
-G = [0.001,0.01,0.1,0.2,0.4,0.5,0.6,0.7,0.9,1.0,1.2,1.7,2];
+G = [0.25, 1];
 
-Ghigh = [2.5,3,4,5,6,7,8,9,10,11,15,20,25];
+Ghigh = [2.5, 25];
 
 % Initialize result storage
 resultsU8_5 = cell(numFields, 1);
@@ -276,7 +276,6 @@ end
 
 toc
 
-
 %%
 vals = [];
 %%
@@ -307,96 +306,5 @@ stdFvalsall = std(vals)/sqrt(size(vals, 1));
 %results = [resultsallU5_1];
  %results = [resultsallU8_1];
 %results = [resultsallU10_1];
-results = [resultsallU4_1];
+results = [resultsall];
 %results = resultsall;
-
-
-
-%%
-
-% Preallocate
-E_min = zeros(size(Gall));
-E_min_2 = zeros(size(Gall));
-
-for i = 1:length(Gall)
-    E_min(i) = EF_min_general(1, 0, 0, Gall(i));
-    E_min_2(i) = EF_min_general(1.4, 0.5, 0.5, Gall(i));
-end
-
-% Convert cell to array
-fvalsp = zeros(size(Gall));
-for i = 1:length(Gall)
-    fvalsp(i) = meanFvalsall(i);
-end
-color1 = [0 0.4470 0.7410];    % Blue
-color2 = [0.8500 0.3250 0.0980]; % Orange
-color3 = [0.2 0.2 0.2];         % Dark Gray
-
-
-
-meancotst = mean(cotstraightall,1);
-stdcotst = std(cotstraightall)/sqrt(size(cotstraightall, 1));
-
-%% Plot 1: E_min with error bars and cotst
-figure;
-hold on;
-
-% Plot model energy
-plot(Gall, E_min / 1.611, '-', 'LineWidth', 2, 'Color', color2);
-
-% Plot optimization energy
-errorbar(Gall, fvalsp, stdFvalsall, '--s', ...
-    'LineWidth', 2, ...
-    'Color', color1, ...
-    'MarkerSize', 6, ...
-    'MarkerFaceColor', 'none');
-
-% Plot cotst energy
-% errorbar(Gall, meancotst, stdcotst, ':d', ...
-%     'LineWidth', 2, ...
-%     'Color', [0.2 0.2 0.2], ...
-%     'MarkerSize', 6, ...
-%     'MarkerFaceColor', 'none');
-
-% Axes and labels
-set(gca, 'XScale', 'log', 'FontSize', 16);
-%set(gca, 'XScale', 'log', 'YScale', 'log', 'FontSize', 16);
-xlabel('G', 'FontSize', 18);
-ylabel('COT', 'FontSize', 18);
-title('COT vs G', 'FontSize', 18);
-legend({...
-    'E_{Model(W_y = 1, W_z = 0, W_x = 0)}', ...
-    'Optimized Trajectory COT', ...
-    'Straight-line Trajectory'}, ...
-    'Location', 'best', 'FontSize', 16);
-grid on;
-
-
-%% Plot 2: E_min_2 with error barsfigure;
-hold on;
-
-% Plot: E_min_2
-h1 = plot(Gall, E_min_2 / 1.611, '-', 'LineWidth', 2, 'Color', color3);
-
-% Plot: E_min
-h2 = plot(Gall, E_min / 1.611, '-', 'LineWidth', 2, 'Color', color2);
-
-% Plot: Optimized trajectory (error bars)
-h3 = errorbar(Gall, fvalsp, stdFvalsall, '--s', ...
-    'LineWidth', 2, ...
-    'Color', color1, ...
-    'MarkerSize', 6, ...
-    'MarkerFaceColor', 'none');
-
-% Axes and labels
-set(gca, 'XScale', 'log', 'FontSize', 16);
-xlabel('G', 'FontSize', 18);
-ylabel('COT', 'FontSize', 18);
-title('COT vs G', 'FontSize', 18);
-legend([h1 h2 h3], { ...
-    'E_{Model}(W_y = 1.4, W_z = 0.5, W_x = 0.5)', ...
-    'E_{Model}(W_y = 1, W_z = 0, W_x = 0)', ...
-    'Optimized Trajectory COT'}, ...
-    'Location', 'best', 'FontSize', 16);
-grid on;
-

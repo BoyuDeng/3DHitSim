@@ -9,32 +9,13 @@ function [COT ,Ft, G, alitotal, Dterm] = COT14(coeffs, t, W, uField, vField, wFi
         % Calculate X
         X = X14unlim(t, coeffs, W);
         
-        % Check dimensions of X
-        % disp('Dimensions of X:');
-        % disp(size(X));
         
-        % Get particle locations
-        %Particles_locations = get_particle_cell_Location(X, 64);
-        
-        % Check dimensions of Particles_locations
-        % disp('Dimensions of Particles_locations:');
-        % disp(size(Particles_locations));
-        % 
-        % Get velocity fields at particle locations
-        %Velocity_fields = get_vectors_at_locations(uField, vField, wField, Particles_locations);
+ 
         Velocity_fields = get_vel(uField,vField,wField,64,X);
         
-        % Check dimensions of Velocity_fields
-        % disp('Dimensions of Velocity_fields:');
-        % disp(size(Velocity_fields));
-        % 
-        % Calculate the gap and velocities
+
         Vs = V14unlim(t, coeffs, W);
         
-        % Check dimensions of Gap and Vs
-        % disp(size(Vs));
-        % 
-        % Calculate the drag forces
 
         Ft =(1/G)* (St*Du-(Velocity_fields./U - Vs./U) .* vecnorm(Velocity_fields./U - Vs./U).^(p-1));
         ali = (Velocity_fields./U - Vs./U);
