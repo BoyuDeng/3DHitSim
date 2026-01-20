@@ -1,8 +1,9 @@
-numFields = 5;     % You have fields1 to fields5
-start_num = 5500;
-end_num = 9000;
+numFields = 1;     % You have fields1 to fields5
+start_num = 2500;
+%end_num = 6200;
+end_num = 6000;
 numb = end_num-start_num;
-dt = 1e-3;
+dt = 1e-4;
 t = 0:dt:numb*dt;
 p = 1;
 tau_p = 1e-2;
@@ -22,9 +23,13 @@ N = 2; % Number of parallel searches
 %%
 tic
 
-G = [0.25, 1];
+% G = [5,8];
+% 
+% Ghigh = [11,15];
 
-Ghigh = [2.5, 25];
+G = [25 35];
+
+Ghigh = [45 55];
 
 % Initialize result storage
 resultsU8_5 = cell(numFields, 1);
@@ -68,27 +73,32 @@ for fieldIdx = 1:numFields
     % Define the file path dynamically
     file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', 100);
 
-    % Read all field files
-    numFiles = end_num - start_num + 1;
-    variables_list = cell(numFiles, 1);
-    
-    for i = start_num:end_num
-        filename = fullfile(file_path, sprintf('field_%05d', i));
-        [~, ~, ~, ~, variables] = read_field_file(filename);
-        variables_list{i - start_num + 1} = variables;
-    end
-    
-    % Extract u, v, w fields
-    uField = cell(numFiles, 1);
-    vField = cell(numFiles, 1);
-    wField = cell(numFiles, 1);
-    
-    for i = 1:numFiles
-        data = variables_list{i};
-        uField{i} = data(1);
-        vField{i} = data(2);
-        wField{i} = data(3);
-    end
+indices = start_num:2:end_num;
+numFiles = numel(indices);
+
+t = (indices - start_num) * dt;
+
+dt = dt*2;
+variables_list = cell(numFiles, 1);
+
+for k = 1:numFiles
+    i = indices(k);
+    filename = fullfile(file_path, sprintf('field_%05d', i));
+    [~, ~, ~, ~, variables] = read_field_file(filename);
+    variables_list{k} = variables;
+end
+
+% Extract u, v, w fields
+uField = cell(numFiles, 1);
+vField = cell(numFiles, 1);
+wField = cell(numFiles, 1);
+
+for k = 1:numFiles
+    data = variables_list{k};
+    uField{k} = data(1);
+    vField{k} = data(2);
+    wField{k} = data(3);
+end
     
     % Calculate RMS velocity U
     U = calculateRMS(uField(1:100), vField(1:100), wField(1:100));
@@ -98,7 +108,7 @@ for fieldIdx = 1:numFields
     tempFval5 = cell(1, N);
     parfor i = 1:N
         [tempResults5{i}.coeffs, tempResults5{i}.W, tempResults5{i}.energy, tempFval5{i}] = ...
-            optimization27(t, U, uField, vField, wField, dt, p, U, Forcing, 1000, 5, G(i), 2, 30, 1, 1, []);
+            optimization27(t, U, uField, vField, wField, dt, p, U, Forcing, 1000, 5, G(i), 2, 300, 1, 1, []);
     end
     resultsU8_5{fieldIdx} = tempResults5;
     fvalsU8_5{fieldIdx} = tempFval5;
@@ -108,7 +118,7 @@ for fieldIdx = 1:numFields
     tempFval10 = cell(1,N);
     parfor i = 1:N
         [tempResults10{i}.coeffs, tempResults10{i}.W, tempResults10{i}.energy, tempFval10{i}] = ...
-            optimization27(t, tempResults5{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 10, G(i), 2, 30, 1, 1, tempResults5{i}.coeffs);
+            optimization27(t, tempResults5{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 10, G(i), 2, 300, 1, 1, tempResults5{i}.coeffs);
     end
     resultsU8_10{fieldIdx} = tempResults10;
     fvalsU8_10{fieldIdx} = tempFval10;
@@ -117,7 +127,7 @@ for fieldIdx = 1:numFields
 tempFval15 = cell(1, N);
 parfor i = 1:N
     [tempResults15{i}.coeffs, tempResults15{i}.W, tempResults15{i}.energy, tempFval15{i}] = ...
-        optimization27(t, tempResults10{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 15, G(i), 2, 30, 1, 1, tempResults10{i}.coeffs);
+        optimization27(t, tempResults10{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 15, G(i), 2, 300, 1, 1, tempResults10{i}.coeffs);
 end
 resultsU8_15{fieldIdx} = tempResults15;
 fvalsU8_15{fieldIdx} = tempFval15;
@@ -127,7 +137,7 @@ tempResults20 = cell(1, N);
 tempFval20 = cell(1, N);
 parfor i = 1:N
     [tempResults20{i}.coeffs, tempResults20{i}.W, tempResults20{i}.energy, tempFval20{i}] = ...
-        optimization27(t, tempResults15{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 20, G(i), 2, 30, 1, 1, tempResults15{i}.coeffs);
+        optimization27(t, tempResults15{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 20, G(i), 2, 300, 1, 1, tempResults15{i}.coeffs);
 end
 resultsU8_20{fieldIdx} = tempResults20;
 fvalsU8_20{fieldIdx} = tempFval20;
@@ -306,5 +316,5 @@ stdFvalsall = std(vals)/sqrt(size(vals, 1));
 %results = [resultsallU5_1];
  %results = [resultsallU8_1];
 %results = [resultsallU10_1];
-results = [resultsall];
+results = [resultsallU8_2x];
 %results = resultsall;

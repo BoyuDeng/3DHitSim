@@ -1,0 +1,121 @@
+
+%%
+vals = [];
+%%
+
+%fvalue = [fvalsallU8himod; fvalsallU8himod2];
+% fvalue = [fvalsallU5_1];
+%fvalue = [fvalsallU8_1];
+%fvalue = [fvalsallU10_1];
+%fvalue = [fvalsallU4_1];
+fevalue  = resultsall;
+fvalue = fevalue;
+N = numel(fvalue{1});  % Assuming each is a cell array of size N×1
+M = numel(fvalue);
+tempvals = zeros(M, N);  
+for i = 1:N
+   
+    for fieldIdx = 1:M
+        tempvals(fieldIdx, i) = fvalue{fieldIdx}{i}.energy;
+    end
+    
+end
+
+vals = [vals;tempvals];
+
+meanFvalsall = mean(vals, 1);
+stdFvalsall = std(vals)/sqrt(size(vals, 1));
+
+
+%%
+
+% Preallocate
+E_min = zeros(size(st_Gall));
+E_min_2 = zeros(size(st_Gall));
+
+for i = 1:length(st_Gall)
+    E_min(i) = EF_min_general(1, 0, 0, st_Gall(i));
+    E_min_2(i) = EF_min_general(1.4, 0.5, 0.5, st_Gall(i));
+end
+
+% Convert cell to array
+fvalsp = zeros(size(Gall));
+for i = 1:length(Gall)
+    fvalsp(i) = meanFvalsall(i);
+end
+color1 = [0 0.4470 0.7410];    % Blue
+color2 = [0.8500 0.3250 0.0980]; % Orange
+color3 = [0.2 0.2 0.2];         % Dark Gray
+
+
+
+% meancotst = mean(cotstraightall,1);
+% stdcotst = std(cotstraightall)/sqrt(size(cotstraightall, 1));
+
+%% Plot 1: E_min with error bars and cotst
+figure;
+hold on;
+
+% Plot model energy
+plot(st_Gall, E_min / 1.611, '-', 'LineWidth', 2, 'Color', color2);
+
+% Plot optimization energy
+errorbar(Gall, fvalsp, stdFvalsall, '--s', ...
+    'LineWidth', 2, ...
+    'Color', color1, ...
+    'MarkerSize', 6, ...
+    'MarkerFaceColor', 'none');
+
+% Plot cotst energy
+% errorbar(Gall, meancotst, stdcotst, ':d', ...
+%     'LineWidth', 2, ...
+%     'Color', [0.2 0.2 0.2], ...
+%     'MarkerSize', 6, ...
+%     'MarkerFaceColor', 'none');
+
+% Axes and labels
+set(gca, 'XScale', 'log', 'FontSize', 16);
+%set(gca, 'XScale', 'log', 'YScale', 'log', 'FontSize', 16);
+xlabel('G', 'FontSize', 18);
+ylabel('COT', 'FontSize', 18);
+title('COT vs G', 'FontSize', 18);
+legend({...
+    'E_{Model(W_y = 1, W_z = 0, W_x = 0)}', ...
+    'Optimized Trajectory COT', ...
+    'Straight-line Trajectory'}, ...
+    'Location', 'best', 'FontSize', 16);
+grid on;
+
+
+%% Plot 2: E_min_2 with error barsfigure;
+hold on;
+
+% Plot: E_min_2
+h1 = plot(st_Gall, E_min_2 / 1.611, '-', 'LineWidth', 2, 'Color', color3);
+
+% Plot: E_min
+h2 = plot(st_Gall, E_min / 1.611, '-', 'LineWidth', 2, 'Color', color2);
+
+% Plot: Optimized trajectory (error bars)
+h3 = errorbar(Gall, fvalsp, stdFvalsall, 's', ...
+    'LineWidth', 2, ...
+    'Color', color1, ...
+    'MarkerSize', 15, ...
+    'MarkerFaceColor', 'none');
+
+% Axes and labels
+set(gca, 'XScale', 'log', 'FontSize', 16);
+xlabel('G', 'FontSize', 18);
+ylabel('COT', 'FontSize', 18);
+title('COT vs G', 'FontSize', 18);
+legend([h1 h2 h3], { ...
+    'E_{Model}(W_y = 1.4, W_z = 0.5, W_x = 0.5)', ...
+    'E_{Model}(W_y = 1, W_z = 0, W_x = 0)', ...
+    'Optimized Trajectory COT'}, ...
+    'Location', 'best', 'FontSize', 16);
+grid on;
+ax = gca;
+ax.XMinorGrid = 'off';
+ax.YMinorGrid = 'off';
+axis([5^-2 50 0 1])
+

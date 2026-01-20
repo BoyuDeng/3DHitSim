@@ -1,4 +1,3 @@
-
 dot_avgstotal=[];
 updraft_avgstotal=[];
 crosswind_avgstotal=[];
@@ -10,6 +9,17 @@ Wvalsall = [];
 all_updraft = [];
 all_ywind = [];
 all_crosswind = [];
+
+% Gall = [ 1, 25 , 5, 8 , 11, 15];
+
+Gall = [1.5, 2 , 3, 4];
+
+% Gall = [5,6,8,10];
+% 
+% Gall = [1.5, 2 , 3, 4, 5,6,8,10, 12, 16, 20 25];
+
+% [Gall_sorted, idx] = sort(Gallunsort);
+% results = resultsunsort(idx);
 
 %%
 
@@ -35,30 +45,65 @@ for n = 1:numFields
 
 
 
-    % Define the file path dynamically
-    file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', fn);
+%  % Define the file path dynamically
+% file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', 100);
+% 
+% % Define indices to read (every 3rd file: 1, 4, 7, ...)
+% indices = start_num:1:end_num;
+% numFiles = numel(indices);
+% variables_list = cell(numFiles, 1);
+% 
+% % Read selected field files
+% for k = 1:numFiles
+%     i = indices(k);
+%     filename = fullfile(file_path, sprintf('field_%05d', i));
+%     [~, ~, ~, ~, variables] = read_field_file(filename);
+%     variables_list{k} = variables;
+% end
+% 
+% % Extract u, v, w fields
+% uField = cell(numFiles, 1);
+% vField = cell(numFiles, 1);
+% wField = cell(numFiles, 1);
+% 
+% for k = 1:numFiles
+%     data = variables_list{k};
+%     uField{k} = data(1);
+%     vField{k} = data(2);
+%     wField{k} = data(3);
+% end
 
-    % Read all field files
-    numFiles = end_num - start_num + 1;
-    variables_list = cell(numFiles, 1);
-    
-    for i = start_num:end_num
-        filename = fullfile(file_path, sprintf('field_%05d', i));
-        [~, ~, ~, ~, variables] = read_field_file(filename);
-        variables_list{i - start_num + 1} = variables;
-    end
-    
-    % Extract u, v, w fields
-    uField = cell(numFiles, 1);
-    vField = cell(numFiles, 1);
-    wField = cell(numFiles, 1);
-    
-    for i = 1:numFiles
-        data = variables_list{i};
-        uField{i} = data(1);
-        vField{i} = data(2);
-        wField{i} = data(3);
-    end
+% Define time vector to match sampled indices
+%t = (indices - start_num) * dt;
+% Define the file path dynamically
+file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', 100);
+
+% % Define indices to read (every 3rd file: 1, 4, 7, ...)
+% indices = start_num:5:end_num;
+% numFiles = numel(indices);
+variables_list = cell(numFiles, 1);
+
+% Read selected field files
+for k = 1:numFiles
+    i = indices(k);
+    filename = fullfile(file_path, sprintf('field_%05d', i));
+    [~, ~, ~, ~, variables] = read_field_file(filename);
+    variables_list{k} = variables;
+end
+
+% Extract u, v, w fields
+uField = cell(numFiles, 1);
+vField = cell(numFiles, 1);
+wField = cell(numFiles, 1);
+
+for k = 1:numFiles
+    data = variables_list{k};
+    uField{k} = data(1);
+    vField{k} = data(2);
+    wField{k} = data(3);
+end
+
+
     
     % Calculate RMS velocity U
     U = calculateRMS(uField(1:100), vField(1:100), wField(1:100));
@@ -157,80 +202,93 @@ labelFont = 18;
 titleFont = 18;
 legendFont = 16;
 
+% Use st_Gall for all st-series
+x_st = st_Gall;
+
 % Plot 1: <u · w> (Dot Product)
 figure;
-errorbar(Gall, mean_dot_per_field, std_dot_per_field, 'o-', 'LineWidth', 1.5);
+h_reg = errorbar(Gall,  mean_dot_per_field,  std_dot_per_field,  'o',  'LineWidth', 1.5); hold on;
+h_st  = errorbar(x_st, st_mean_dot_per_field, st_std_dot_per_field, 'o', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
-ylabel('<W_{unit}· U_{unit}>', 'FontSize', labelFont);
+ylabel('<W_{unit}\cdot U_{unit}>', 'FontSize', labelFont);
 title('Alignment of Flow and Trajectory', 'FontSize', titleFont);
+legend([h_reg h_st], {'Regular','st'}, 'Location','best','FontSize',legendFont);
 grid on;
+
 
 % Plot 2: Updraft
 figure;
-h1 = errorbar(Gall, mean_updraft, std_updraft, 's-', 'LineWidth', 1.5);
-h2 = yline(-0.07, '--r', 'LineWidth', 1.5);
+h_reg = errorbar(Gall, mean_updraft, std_updraft, 's', 'LineWidth', 1.5); hold on;
+h_ref = yline(-0.07, '--r', 'LineWidth', 1.5);
+h_st  = errorbar(x_st, st_mean_updraft, st_std_updraft, 's', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
 ylabel('<W_{z}>', 'FontSize', labelFont);
 title('Mean Updraft', 'FontSize', titleFont);
-legend([h1 h2], {'Mean Updraft', 'Mean Updraft for SLT'}, ...
-       'Location', 'best', 'FontSize', legendFont);
+legend([h_reg h_st h_ref], {'Regular','st','Mean Updraft for SLT'}, 'Location','best','FontSize',legendFont);
 grid on;
 
 % Plot 3: Crosswind
 figure;
-h1 = errorbar(Gall, mean_crosswind, std_crosswind, 'd-', 'LineWidth', 1.5); hold on;
-h2 = yline(0.78, '--r', 'LineWidth', 1.5);
+h_reg = errorbar(Gall, mean_crosswind, std_crosswind, 'd', 'LineWidth', 1.5); hold on;
+h_ref = yline(0.78, '--r', 'LineWidth', 1.5);
+h_st  = errorbar(x_st, st_mean_crosswind, st_std_crosswind, 'd', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
 ylabel('<|W_{x}|>', 'FontSize', labelFont);
 title('Mean Crosswind', 'FontSize', titleFont);
-legend([h1 h2], {'Mean Crosswind(CW)', 'Mean CW for Straight Line Trajectory'}, ...
-       'Location', 'best', 'FontSize', legendFont);
+legend([h_reg h_st h_ref], {'Regular','st','Mean CW for Straight Line Trajectory'}, ...
+       'Location','best','FontSize',legendFont);
 grid on;
 
 % Plot 4: ywind (Tailwind)
 figure;
-errorbar(Gall, mean_ywind, std_ywind, '^-', 'LineWidth', 1.5);
+h_reg = errorbar(Gall, mean_ywind, std_ywind, '^', 'LineWidth', 1.5); hold on;
+h_st  = errorbar(x_st, st_mean_ywind, st_std_ywind, '^', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
 ylabel('<W_{y}>', 'FontSize', labelFont);
 title('Mean Tailwind', 'FontSize', titleFont);
+legend([h_reg h_st], {'Regular','st'}, 'Location','best','FontSize',legendFont);
 grid on;
 
 % Plot 5: W value (U_0)
 figure;
-errorbar(Gall, meanWall, std_wval, '^-', 'LineWidth', 1.5); hold on;
-% Add y = sqrt(2)*x line
-xline = logspace(log10(min(Gall)), log10(max(Gall)), 100); % generate 100 log-spaced points
-ylineqf = sqrt(2) * xline;
-plot(xline, ylineqf, 'k-.', 'LineWidth', 1.5);
+h_reg = errorbar(Gall, meanWall, std_wval, '^', 'LineWidth', 1.5); hold on;
+h_st  = errorbar(x_st, st_meanWall, st_std_wval, '^', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
 
+% Add y = sqrt(2)*x line (based on regular Gall extent)
+x_qf = logspace(log10(min(Gall)), log10(max(Gall)), 100);
+y_qf = sqrt(2) * x_qf;
+h_qf = plot(x_qf, y_qf, 'k-.', 'LineWidth', 1.5);
 
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
 ylabel('<U_0>', 'FontSize', labelFont);
 title('', 'FontSize', titleFont);
-legend('<U_0>', 'U for QF model', 'Location', 'best', 'FontSize', legendFont);
+legend([h_reg h_st h_qf], {'Regular','st','U for QF model'}, 'Location','best','FontSize',legendFont);
 grid on;
-
 
 % Plot 6: Velocity-magnitude W and U
 figure;
-errorbar(Gall, mean_mag, std_mag, 'v-', 'LineWidth', 1.5); hold on;
-errorbar(Gall, mean_Umag, std_Umag, 'x--', 'LineWidth', 1.5);
+h_W_reg = errorbar(Gall, mean_mag,  std_mag,  'v',  'LineWidth', 1.5); hold on;
+h_U_reg = errorbar(Gall, mean_Umag, std_Umag, 'x', 'LineWidth', 1.5);
+h_W_st  = errorbar(x_st, st_mean_mag,  st_std_mag,  'v', 'MarkerFaceColor', 'auto', 'LineWidth', 1.5, 'MarkerSize', 12);
+h_U_st  = errorbar(x_st, st_mean_Umag, st_std_Umag, 'x:',  'LineWidth', 1.5, 'MarkerSize', 12);
 
-% Add y = sqrt(2)*x line
-xline = logspace(log10(min(Gall)), log10(max(Gall)), 100); % generate 100 log-spaced points
-ylineqf = sqrt(2) * xline;
-plot(xline, ylineqf, 'k-.', 'LineWidth', 1.5);
+% Add y = sqrt(2)*x line (based on regular Gall extent)
+x_qf = logspace(log10(min(Gall)), log10(max(Gall)), 100);
+y_qf = sqrt(2) * x_qf;
+h_qf = plot(x_qf, y_qf, 'k-.', 'LineWidth', 1.5);
 
 set(gca, 'XScale', 'log', 'FontSize', axisFont);
 xlabel('G', 'FontSize', labelFont);
 ylabel('Velocity Magnitude', 'FontSize', labelFont);
 title('Mean Velocity Magnitude', 'FontSize', titleFont);
-legend('<W> (flow field)', '<U> (point-mass)', 'U for QF model', 'Location', 'best', 'FontSize', legendFont);
+legend([h_W_reg h_U_reg h_W_st h_U_st h_qf], ...
+       {'<W> (flow field)','<U> (point-mass)','<W> st','<U> st','U for QF model'}, ...
+       'Location','best','FontSize',legendFont);
 grid on;
 
 %% PDF of Updraft  (w_z)
@@ -285,10 +343,10 @@ grid on;
 set(gca, 'FontSize', 16);
 
 
+%%
 
+save('st_data.mat', ...
+    'st_mean_dot_per_field','st_mean_updraft','st_mean_crosswind','st_mean_ywind','st_meanWall','st_mean_mag','st_mean_Umag', ...
+    'st_std_dot_per_field','st_std_updraft','st_std_crosswind','st_std_ywind','st_std_wval','st_std_mag','st_std_Umag','st_Gall');
 
-
-
-
-
-
+save('Sep24data.mat', 'resultsallU8_4_10x','resultsallU8_5_10x','resultsallU8_6_10x')

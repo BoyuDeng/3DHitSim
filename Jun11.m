@@ -1,6 +1,6 @@
 numFields = 5;     % You have fields1 to fields5
 start_num = 350;
-end_num = 1050;
+end_num = 700;
 numb = end_num-start_num;
 dt = 1e-3;
 t = 0:dt:numb*dt;
@@ -305,9 +305,9 @@ stdFvalsall = std(vals)/sqrt(size(vals, 1));
 %results = [resultsallU4himode];u-
 %results = [resultsallU8himod; resultsallU8himod2];
 %results = [resultsallU5_1];
- %results = [resultsallU8_1];
+ results = [resultsallU8_1];
 %results = [resultsallU10_1];
-results = [resultsallU4_1];
+%results = [resultsallU4_1];
 %results = resultsall;
 
 
@@ -334,8 +334,8 @@ color3 = [0.2 0.2 0.2];         % Dark Gray
 
 
 
-meancotst = mean(cotstraightall,1);
-stdcotst = std(cotstraightall)/sqrt(size(cotstraightall, 1));
+% meancotst = mean(cotstraightall,1);
+% stdcotst = std(cotstraightall)/sqrt(size(cotstraightall, 1));
 
 %% Plot 1: E_min with error bars and cotst
 figure;
