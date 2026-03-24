@@ -10,16 +10,7 @@ all_updraft = [];
 all_ywind = [];
 all_crosswind = [];
 
-% Gall = [ 1, 25 , 5, 8 , 11, 15];
 
-Gall = [1.5, 2 , 3, 4];
-
-% Gall = [5,6,8,10];
-% 
-% Gall = [1.5, 2 , 3, 4, 5,6,8,10, 12, 16, 20 25];
-
-% [Gall_sorted, idx] = sort(Gallunsort);
-% results = resultsunsort(idx);
 
 %%
 
@@ -196,6 +187,28 @@ std_ywind = std(ywind_avgstotal, 0, 1) / sqrt(size(ywind_avgstotal,1));
 std_wval = std(Wvalsall, 0, 1) / sqrt(size(Wvalsall,1));
 std_mag   = std(mag_avgstotal ,0,1) / sqrt(size(mag_avgstotal ,1));
 std_Umag   = std(Umag_avgstotal ,0,1) / sqrt(size(Umag_avgstotal ,1));
+
+
+cols = 1:25;
+
+% Means
+Gall = Gall(cols);
+mean_dot_per_field = mean_dot_per_field(cols);
+mean_updraft       = mean_updraft(cols);
+mean_crosswind     = mean_crosswind(cols);
+mean_ywind         = mean_ywind(cols);
+meanWall           = meanWall(cols);
+mean_mag           = mean_mag(cols);
+mean_Umag          = mean_Umag(cols);
+
+% Standard Errors
+std_dot_per_field = std_dot_per_field(cols);
+std_updraft       = std_updraft(cols);
+std_crosswind     = std_crosswind(cols);
+std_ywind         = std_ywind(cols);
+std_wval          = std_wval(cols);
+std_mag           = std_mag(cols);
+std_Umag          = std_Umag(cols);
 % Common font sizes
 axisFont = 16;
 labelFont = 18;

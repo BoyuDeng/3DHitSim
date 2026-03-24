@@ -1,0 +1,113 @@
+numFields = 1;     % You have fields1 to fields5
+start_num = 5500;
+%end_num = 6200;
+end_num = 9000;
+numb = end_num-start_num;
+dt = 1e-4;
+t = 0:dt:numb*dt;
+p = 1;
+tau_p = 1e-2;
+Forcing = 1;
+N=2;
+
+Gall = [0.01,0.1,0.2,0.4,0.5,0.6,0.7,0.9,1.0,1.2,1.7,2,2.5,3,4,5,6,7,8,9,10,11,15,20,25,30,35, 40];
+
+%%
+
+% One G-vector per fieldIdx
+Glist = mat2cell(Gall(:).', 1, repmat(N, 1, numel(Gall)/N));
+
+numFields = numel(Glist);
+
+
+resultsU8_5  = cell(numFields,1);
+resultsU8_10 = cell(numFields,1);
+resultsU8_15 = cell(numFields,1);
+resultsU8_20 = cell(numFields,1);
+
+fvalsU8_5  = cell(numFields,1);
+fvalsU8_10 = cell(numFields,1);
+fvalsU8_15 = cell(numFields,1);
+fvalsU8_20 = cell(numFields,1);
+
+for fieldIdx = 1:numFields
+
+    G = Glist{fieldIdx};        % ⭐ single source of truth
+    N = numel(G);
+
+    % -------------------------------
+    % Load HIT fields (unchanged)
+    % -------------------------------
+    file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', 100);
+
+    indices = start_num:5:end_num;
+    numFiles = numel(indices);
+
+    t  = (indices - start_num) * dt;
+    dt2 = dt * 5;               % ⭐ avoid overwriting dt
+
+    variables_list = cell(numFiles,1);
+    for k = 1:numFiles
+        filename = fullfile(file_path, sprintf('field_%05d', indices(k)));
+        [~,~,~,~,vars] = read_field_file(filename);
+        variables_list{k} = vars;
+    end
+
+    uField = cell(numFiles,1);
+    vField = cell(numFiles,1);
+    wField = cell(numFiles,1);
+    for k = 1:numFiles
+        uField{k} = variables_list{k}(1);
+        vField{k} = variables_list{k}(2);
+        wField{k} = variables_list{k}(3);
+    end
+
+    U = calculateRMS(uField(1:100), vField(1:100), wField(1:100));
+
+    % ======================
+    % 5 modes
+    % ======================
+    tempR5 = cell(1,N); tempF5 = cell(1,N);
+    parfor i = 1:N
+        [tempR5{i}.coeffs, tempR5{i}.W, tempR5{i}.energy, tempF5{i}] = ...
+            optimization27(t, U, uField, vField, wField, dt2, p, U, ...
+                           Forcing, 1000, 5, G(i), 2, 300, 1, 1, []);
+    end
+
+    % ======================
+    % 10 modes
+    % ======================
+    tempR10 = cell(1,N); tempF10 = cell(1,N);
+    parfor i = 1:N
+        [tempR10{i}.coeffs, tempR10{i}.W, tempR10{i}.energy, tempF10{i}] = ...
+            optimization27(t, tempR5{i}.W, uField, vField, wField, dt2, p, U, ...
+                           Forcing, 1000, 10, G(i), 2, 300, 1, 1, tempR5{i}.coeffs);
+    end
+
+    % ======================
+    % 15 modes
+    % ======================
+    tempR15 = cell(1,N); tempF15 = cell(1,N);
+    parfor i = 1:N
+        [tempR15{i}.coeffs, tempR15{i}.W, tempR15{i}.energy, tempF15{i}] = ...
+            optimization27(t, tempR10{i}.W, uField, vField, wField, dt2, p, U, ...
+                           Forcing, 1000, 15, G(i), 2, 300, 1, 1, tempR10{i}.coeffs);
+    end
+
+    % ======================
+    % 20 modes
+    % ======================
+    tempR20 = cell(1,N); tempF20 = cell(1,N);
+    parfor i = 1:N
+        [tempR20{i}.coeffs, tempR20{i}.W, tempR20{i}.energy, tempF20{i}] = ...
+            optimization27(t, tempR15{i}.W, uField, vField, wField, dt2, p, U, ...
+                           Forcing, 1000, 20, G(i), 2, 300, 1, 1, tempR15{i}.coeffs);
+    end
+
+    % Store
+    resultsU8_5{fieldIdx}  = tempR5;   fvalsU8_5{fieldIdx}  = tempF5;
+    resultsU8_10{fieldIdx} = tempR10;  fvalsU8_10{fieldIdx} = tempF10;
+    resultsU8_15{fieldIdx} = tempR15;  fvalsU8_15{fieldIdx} = tempF15;
+    resultsU8_20{fieldIdx} = tempR20;  fvalsU8_20{fieldIdx} = tempF20;
+
+end

@@ -375,7 +375,7 @@ contains
    integer :: ierr
 
    ! Specify the folder to save files
-   foldername = 'output_fields/' ! Change this to your desired folder path
+   foldername = './output_fields/' ! Change this to your desired folder path
 
 
           ! Setup datafile before the loop
@@ -506,7 +506,7 @@ contains
         call df%pushvar(name='V', var=fs%V)
         call df%pushvar(name='W', var=fs%W)
       ! Construct the full path for the filename
-      write(filename, '(A,I0.5)') 'field_', int(time%t*1000.0_wp) ! Adjust the format as needed
+      write(filename, '(A,I0.5)') 'field_', int(time%t*10000.0_wp) ! Adjust the format as needed
       fullpath = trim(foldername) // trim(filename)
       
       ! Write the data to the file

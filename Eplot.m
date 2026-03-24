@@ -8,7 +8,7 @@ vals = [];
 %fvalue = [fvalsallU8_1];
 %fvalue = [fvalsallU10_1];
 %fvalue = [fvalsallU4_1];
-fevalue  = resultsall;
+fevalue  = C3;
 fvalue = fevalue;
 N = numel(fvalue{1});  % Assuming each is a cell array of size N×1
 M = numel(fvalue);
@@ -25,6 +25,8 @@ vals = [vals;tempvals];
 
 meanFvalsall = mean(vals, 1);
 stdFvalsall = std(vals)/sqrt(size(vals, 1));
+
+%Gall = [0.2 1  25 55 5 8 10 15 2 3 4 30 40 50];
 
 
 %%

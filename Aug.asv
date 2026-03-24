@@ -8,7 +8,7 @@ t = 0:dt:numb*dt;
 p = 1;
 tau_p = 1e-2;
 Forcing = 1;
-N = 1; % Number of parallel searches
+N = 2; % Number of parallel searches
 % resultsU8ul5 = cell(1, N);
 % fvalsU8ul5 = cell(1, N);
 % 
@@ -27,9 +27,13 @@ tic
 % 
 % Ghigh = [11,15];
 
-G = [1.5 2];
+G = [25 35];
 
-Ghigh = [3 4];
+G = [0.2 1];
+
+G= [2 3 4];
+
+Ghigh = [4 7];
 
 % Initialize result storage
 resultsU8_5 = cell(numFields, 1);
@@ -73,10 +77,12 @@ for fieldIdx = 1:numFields
     % Define the file path dynamically
     file_path = sprintf('/Users/boyi/Simulations/hit/output_fields%dU=8', 100);
 
-indices = start_num:1:end_num;
+indices = start_num:5:end_num;
 numFiles = numel(indices);
-dt = dt*2;
+
 t = (indices - start_num) * dt;
+
+dt = dt*5;
 variables_list = cell(numFiles, 1);
 
 for k = 1:numFiles
@@ -172,7 +178,7 @@ tempResults5 = cell(1, N);
 tempFval5 = cell(1, N);
 parfor i = 1:N
     [tempResults5{i}.coeffs, tempResults5{i}.W, tempResults5{i}.energy, tempFval5{i}] = ...
-        optimization27(t, U, uField, vField, wField, dt, p, U, Forcing, 1000, 5, Ghigh(i), 2, 300, 1, 1, []);
+        optimization27(t, U, uField, vField, wField, dt, p, U, Forcing, 1000, 5, Ghigh(i), 2, 600, 1, 1, []);
 end
 resultsU8_5high{fieldIdx} = tempResults5;
 fvalsU8_5high{fieldIdx} = tempFval5;
@@ -182,7 +188,7 @@ tempResults10 = cell(1,N);
 tempFval10 = cell(1,N);
 parfor i = 1:N
     [tempResults10{i}.coeffs, tempResults10{i}.W, tempResults10{i}.energy, tempFval10{i}] = ...
-        optimization27(t, tempResults5{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 10, Ghigh(i), 2, 300, 1, 1, tempResults5{i}.coeffs);
+        optimization27(t, tempResults5{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 10, Ghigh(i), 2, 600, 1, 1, tempResults5{i}.coeffs);
 end
 resultsU8_10high{fieldIdx} = tempResults10;
 fvalsU8_10high{fieldIdx} = tempFval10;
@@ -192,7 +198,7 @@ tempResults15 = cell(1, N);
 tempFval15 = cell(1, N);
 parfor i = 1:N
     [tempResults15{i}.coeffs, tempResults15{i}.W, tempResults15{i}.energy, tempFval15{i}] = ...
-        optimization27(t, tempResults10{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 15, Ghigh(i), 2, 300, 1, 1, tempResults10{i}.coeffs);
+        optimization27(t, tempResults10{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 15, Ghigh(i), 2, 600, 1, 1, tempResults10{i}.coeffs);
 end
 resultsU8_15high{fieldIdx} = tempResults15;
 fvalsU8_15high{fieldIdx} = tempFval15;
@@ -202,7 +208,7 @@ tempResults20 = cell(1, N);
 tempFval20 = cell(1, N);
 parfor i = 1:N
     [tempResults20{i}.coeffs, tempResults20{i}.W, tempResults20{i}.energy, tempFval20{i}] = ...
-        optimization27(t, tempResults15{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 20, Ghigh(i), 2, 300, 1, 1, tempResults15{i}.coeffs);
+        optimization27(t, tempResults15{i}.W, uField, vField, wField, dt, p, U, Forcing, 1000, 20, Ghigh(i), 2, 600, 1, 1, tempResults15{i}.coeffs);
 end
 resultsU8_20high{fieldIdx} = tempResults20;
 fvalsU8_20high{fieldIdx} = tempFval20;
@@ -314,5 +320,5 @@ stdFvalsall = std(vals)/sqrt(size(vals, 1));
 %results = [resultsallU5_1];
  %results = [resultsallU8_1];
 %results = [resultsallU10_1];
-results = [resultsallU8_10x2];
+results = [resultsall];
 %results = resultsall;

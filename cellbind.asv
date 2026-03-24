@@ -34,10 +34,11 @@ end
 
 % C14x1: 14×1 cell, each entry is (supposedly) a 1×2 container
 
-tmp = cellfun(@(x) x(:).', resultsMar24, 'UniformOutput', false);  % each -> 1×2 (still could be cell/struct)
+tmp = cellfun(@(x) x(:).', resultsf25, 'UniformOutput', false);  % each -> 1×2 (still could be cell/struct)
 tmp = [tmp{:}];                                             % -> 1×28 (cell or numeric)
-C4 = {tmp};
+C1 = {tmp};
 
+Call
 
 
 
